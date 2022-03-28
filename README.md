@@ -25,7 +25,6 @@
   - **Enable OpenMP**: ShapeLab Project Property -> 'Configuration Properties' -> c/c++ -> Language -> Open MP Support -> Select 'Yes (/openmp)'
   
   - **Open Console**: ShapeLab Project Property -> 'Configuration Proerties' -> Linker -> System -> Select 'Console (/SUBSYSTEM:CONSOLE)' in 'SubSystem'
-<<<<<<< HEAD
   
   - **Dynamic Linking Library (DLL):** after compilation, you might need to move the required QT dynamic linking libraries placed in ./thirdPartyDependency/Qt5/:
   
@@ -96,22 +95,7 @@
   
   
   
-=======
-  - **Dynamic Linking Library (DLL):** after compilation, you might need to move the required QT dynamic linking libraries placed in ./thirdPartyDependency/Qt5:
-
-  - If you run in release mode, copy files from ./thirdPartyDependency/Qt5/release to ./ShapeLab/release
-  - If you run in debug mode, copy files from ./thirdPartyDependency/Qt5/debug to ./ShapeLab/debug
-
   
-
-
-
-## Usage
-
-### Input Meshes
-
-Our simulator takes two surface meshes $\mathcal{S}_{c}$ and $\mathcal{S}_{b}$
->>>>>>> d058d70d81417e01c62dbd5ec179efeba39c3f0a
   
   
   
