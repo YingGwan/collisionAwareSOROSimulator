@@ -228,7 +228,60 @@
           </layout>
          </item>
          <item>
+          <widget class="QCheckBox" name="checkBox_readChamberRegion">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Read Chamber Region</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_A1">
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.300000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_generateTETMesh">
+           <property name="text">
+            <string>Deformation &amp;&amp; Collision Response</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_runCollisionChecking">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Collision Response Testing</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_clearAll">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Clear All</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QComboBox" name="comboBox_planeDir">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <item>
             <property name="text">
              <string>X</string>
@@ -248,77 +301,26 @@
          </item>
          <item>
           <widget class="QSlider" name="horizontalSlider_slice_Multi_dir">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_readChamberRegion">
-           <property name="text">
-            <string>Read Chamber Region</string>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_generateTETMesh">
-           <property name="text">
-            <string>TET Mesh Generation</string>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>237</height>
+            </size>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_runCollisionChecking">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Collision Response Testing</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_A1">
-           <property name="minimum">
-            <double>1.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>100.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.300000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_A2">
-           <property name="minimum">
-            <double>1.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.500000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_A3">
-           <property name="minimum">
-            <double>1.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.500000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_clearAll">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Clear All</string>
-           </property>
-          </widget>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -391,7 +393,7 @@
             <bool>false</bool>
            </property>
            <property name="text">
-            <string>Collision Checking Response</string>
+            <string>Collision Checking &amp;&amp; Response</string>
            </property>
           </widget>
          </item>
@@ -573,7 +575,7 @@
      <x>0</x>
      <y>0</y>
      <width>1389</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="layoutDirection">

@@ -19,10 +19,82 @@
   The installation guide of this IDE is here: [Video Demo](https://www.youtube.com/watch?v=6bXrfVrYyxk) 
   
   - After install Qt tool, open visual studio 2019, then select "Extensions" -> "Qt VS Tools" -> "Open Qt Project File (.pro)".  This will **automatically generate the Qt Vs project**.
+  
   - Right click "shapeLab", set "shapeLab" as the **start-up project**
+  
   - **Enable OpenMP**: ShapeLab Project Property -> 'Configuration Properties' -> c/c++ -> Language -> Open MP Support -> Select 'Yes (/openmp)'
+  
   - **Open Console**: ShapeLab Project Property -> 'Configuration Proerties' -> Linker -> System -> Select 'Console (/SUBSYSTEM:CONSOLE)' in 'SubSystem'
-  - **QT Version**: if you install a different qt version and meet with an issue open the UI after compile the project, you may first check and find 'Qt5Core.dll', 'Qt5Gui.dll', and 'Qt5Wdgets.dll' in the QT installed folder and add to '../shapeLab/release/' folder (Visual Studio will generate this folder after you compile the project). For Debug mode, you need to add 'Qt5Cored.dll', 'Qt5Guid.dll', and 'Qt5Wdgetsd.dll' to '../shapeLab/debug/' folder.
+  
+  - **Dynamic Linking Library (DLL):** after compilation, you might need to move the required QT dynamic linking libraries placed in ./thirdPartyDependency/Qt5/:
+  
+    - If you run in release mode, copy files from ./thirdPartyDependency/Qt5/release/ to ./ShapeLab/release/
+    - If you run in debug mode, copy files from ./thirdPartyDependency/Qt5/debug/ to ./ShapeLab/debug/
+  
+    
+  
+  
+  
+  ## Usage
+  
+  ### Input Meshes
+  
+  - Our simulator takes two **surface meshes** as input:
+    - $\mathcal{S}_{b}$: Represent the **outer body shape** of soft robots. 
+    - $\mathcal{S}_{c}$:  Represent the **Inner chamber shape** which can be inflated.
+  
+  
+  
+  - Our algorithm will use ***[TetGen](https://wias-berlin.de/software/tetgen/index.html)***  to generate the tetrahedral mesh inside the  $\mathcal{S}_{b}$ and being segmented by $\mathcal{S}_{c}$. 
+  
+  - File Location: In ./model/
+  
+  - We prepare two different sets of meshes in this project to demonstrate the results: 
+  
+    - Soft finger and its collision with ball:  file name is fingerNew_body.obj and fingerNew_chamber.obj 
+    - Twisting robot: twisting_body.obj and twisting_chamber.obj
+  
+    
+  
+  ### Steps 
+  
+  **Soft Finger with Ball**
+  
+  - Change the volume expansion ratio in the **spin box** (default value: 1.3) 
+  
+  - Input the iteration time you want to conduct (after "**IterTime"** label)
+  
+  - press the "**Deformation & Collision Response**" button to conduct:
+  
+    - Tetrahedral mesh generation and remeshing
+  
+    - Deformation
+  
+    - Collision Checking and Response
+  
+      
+  
+  **Twisting Robot**
+  
+  - Press the **Input Twisting Robot** button
+  - Press the **Input Obstacle** Button to read obstacle mesh
+  - Change the expansion ratio in spin box under **Expansion Ratio** label
+  - Press the **Conduct Deformation** button to run deformation
+  - Press the **Collision Checking & Response** button to run collision checking and response
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   

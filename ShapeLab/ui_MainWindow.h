@@ -83,15 +83,14 @@ public:
     QCheckBox *checkBox_combinedInput;
     QLabel *label;
     QSpinBox *spinBox_iterTime;
-    QComboBox *comboBox_planeDir;
-    QSlider *horizontalSlider_slice_Multi_dir;
     QCheckBox *checkBox_readChamberRegion;
+    QDoubleSpinBox *doubleSpinBox_A1;
     QPushButton *pushButton_generateTETMesh;
     QPushButton *pushButton_runCollisionChecking;
-    QDoubleSpinBox *doubleSpinBox_A1;
-    QDoubleSpinBox *doubleSpinBox_A2;
-    QDoubleSpinBox *doubleSpinBox_A3;
     QPushButton *pushButton_clearAll;
+    QComboBox *comboBox_planeDir;
+    QSlider *horizontalSlider_slice_Multi_dir;
+    QSpacerItem *verticalSpacer_4;
     QWidget *tab_2;
     QVBoxLayout *verticalLayout_3;
     QPushButton *pushButton_inputFourChambers;
@@ -348,24 +347,19 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout_2);
 
-        comboBox_planeDir = new QComboBox(tab);
-        comboBox_planeDir->addItem(QString());
-        comboBox_planeDir->addItem(QString());
-        comboBox_planeDir->addItem(QString());
-        comboBox_planeDir->setObjectName(QString::fromUtf8("comboBox_planeDir"));
-
-        verticalLayout_2->addWidget(comboBox_planeDir);
-
-        horizontalSlider_slice_Multi_dir = new QSlider(tab);
-        horizontalSlider_slice_Multi_dir->setObjectName(QString::fromUtf8("horizontalSlider_slice_Multi_dir"));
-        horizontalSlider_slice_Multi_dir->setOrientation(Qt::Horizontal);
-
-        verticalLayout_2->addWidget(horizontalSlider_slice_Multi_dir);
-
         checkBox_readChamberRegion = new QCheckBox(tab);
         checkBox_readChamberRegion->setObjectName(QString::fromUtf8("checkBox_readChamberRegion"));
+        checkBox_readChamberRegion->setEnabled(false);
 
         verticalLayout_2->addWidget(checkBox_readChamberRegion);
+
+        doubleSpinBox_A1 = new QDoubleSpinBox(tab);
+        doubleSpinBox_A1->setObjectName(QString::fromUtf8("doubleSpinBox_A1"));
+        doubleSpinBox_A1->setMinimum(1.000000000000000);
+        doubleSpinBox_A1->setMaximum(100.000000000000000);
+        doubleSpinBox_A1->setValue(1.300000000000000);
+
+        verticalLayout_2->addWidget(doubleSpinBox_A1);
 
         pushButton_generateTETMesh = new QPushButton(tab);
         pushButton_generateTETMesh->setObjectName(QString::fromUtf8("pushButton_generateTETMesh"));
@@ -378,33 +372,31 @@ public:
 
         verticalLayout_2->addWidget(pushButton_runCollisionChecking);
 
-        doubleSpinBox_A1 = new QDoubleSpinBox(tab);
-        doubleSpinBox_A1->setObjectName(QString::fromUtf8("doubleSpinBox_A1"));
-        doubleSpinBox_A1->setMinimum(1.000000000000000);
-        doubleSpinBox_A1->setMaximum(100.000000000000000);
-        doubleSpinBox_A1->setValue(1.300000000000000);
-
-        verticalLayout_2->addWidget(doubleSpinBox_A1);
-
-        doubleSpinBox_A2 = new QDoubleSpinBox(tab);
-        doubleSpinBox_A2->setObjectName(QString::fromUtf8("doubleSpinBox_A2"));
-        doubleSpinBox_A2->setMinimum(1.000000000000000);
-        doubleSpinBox_A2->setMaximum(3.500000000000000);
-
-        verticalLayout_2->addWidget(doubleSpinBox_A2);
-
-        doubleSpinBox_A3 = new QDoubleSpinBox(tab);
-        doubleSpinBox_A3->setObjectName(QString::fromUtf8("doubleSpinBox_A3"));
-        doubleSpinBox_A3->setMinimum(1.000000000000000);
-        doubleSpinBox_A3->setMaximum(3.500000000000000);
-
-        verticalLayout_2->addWidget(doubleSpinBox_A3);
-
         pushButton_clearAll = new QPushButton(tab);
         pushButton_clearAll->setObjectName(QString::fromUtf8("pushButton_clearAll"));
         pushButton_clearAll->setEnabled(false);
 
         verticalLayout_2->addWidget(pushButton_clearAll);
+
+        comboBox_planeDir = new QComboBox(tab);
+        comboBox_planeDir->addItem(QString());
+        comboBox_planeDir->addItem(QString());
+        comboBox_planeDir->addItem(QString());
+        comboBox_planeDir->setObjectName(QString::fromUtf8("comboBox_planeDir"));
+        comboBox_planeDir->setEnabled(false);
+
+        verticalLayout_2->addWidget(comboBox_planeDir);
+
+        horizontalSlider_slice_Multi_dir = new QSlider(tab);
+        horizontalSlider_slice_Multi_dir->setObjectName(QString::fromUtf8("horizontalSlider_slice_Multi_dir"));
+        horizontalSlider_slice_Multi_dir->setEnabled(false);
+        horizontalSlider_slice_Multi_dir->setOrientation(Qt::Horizontal);
+
+        verticalLayout_2->addWidget(horizontalSlider_slice_Multi_dir);
+
+        verticalSpacer_4 = new QSpacerItem(20, 237, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_2->addItem(verticalSpacer_4);
 
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
@@ -566,7 +558,7 @@ public:
         MainWindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1389, 26));
+        menuBar->setGeometry(QRect(0, 0, 1389, 21));
         menuBar->setLayoutDirection(Qt::LeftToRight);
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
@@ -671,14 +663,14 @@ public:
         selectionToolBar->setWindowTitle(QApplication::translate("MainWindow", "selectionToolBar", nullptr));
         checkBox_combinedInput->setText(QApplication::translate("MainWindow", "Combined Input", nullptr));
         label->setText(QApplication::translate("MainWindow", "IterTime", nullptr));
+        checkBox_readChamberRegion->setText(QApplication::translate("MainWindow", "Read Chamber Region", nullptr));
+        pushButton_generateTETMesh->setText(QApplication::translate("MainWindow", "Deformation && Collision Response", nullptr));
+        pushButton_runCollisionChecking->setText(QApplication::translate("MainWindow", "Collision Response Testing", nullptr));
+        pushButton_clearAll->setText(QApplication::translate("MainWindow", "Clear All", nullptr));
         comboBox_planeDir->setItemText(0, QApplication::translate("MainWindow", "X", nullptr));
         comboBox_planeDir->setItemText(1, QApplication::translate("MainWindow", "Y", nullptr));
         comboBox_planeDir->setItemText(2, QApplication::translate("MainWindow", "Z", nullptr));
 
-        checkBox_readChamberRegion->setText(QApplication::translate("MainWindow", "Read Chamber Region", nullptr));
-        pushButton_generateTETMesh->setText(QApplication::translate("MainWindow", "TET Mesh Generation", nullptr));
-        pushButton_runCollisionChecking->setText(QApplication::translate("MainWindow", "Collision Response Testing", nullptr));
-        pushButton_clearAll->setText(QApplication::translate("MainWindow", "Clear All", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Soft Finger With Ball", nullptr));
         pushButton_inputFourChambers->setText(QApplication::translate("MainWindow", "Input Twisting Robot", nullptr));
         pushButton_inputMem->setText(QApplication::translate("MainWindow", "Input Obstacle", nullptr));
