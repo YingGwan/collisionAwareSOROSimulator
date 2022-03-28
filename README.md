@@ -22,8 +22,20 @@
   - Right click "shapeLab", set "shapeLab" as the **start-up project**
   - **Enable OpenMP**: ShapeLab Project Property -> 'Configuration Properties' -> c/c++ -> Language -> Open MP Support -> Select 'Yes (/openmp)'
   - **Open Console**: ShapeLab Project Property -> 'Configuration Proerties' -> Linker -> System -> Select 'Console (/SUBSYSTEM:CONSOLE)' in 'SubSystem'
-  - **QT Version**: if you install a different qt version and meet with an issue open the UI after compile the project, you may first check and find 'Qt5Core.dll', 'Qt5Gui.dll', and 'Qt5Wdgets.dll' in the QT installed folder and add to '../shapeLab/release/' folder (Visual Studio will generate this folder after you compile the project). For Debug mode, you need to add 'Qt5Cored.dll', 'Qt5Guid.dll', and 'Qt5Wdgetsd.dll' to '../shapeLab/debug/' folder.
+  - **Dynamic Linking Library (DLL):** after compilation, you might need to move the required QT dynamic linking libraries placed in ./thirdPartyDependency/Qt5:
+
+  - If you run in release mode, copy files from ./thirdPartyDependency/Qt5/release to ./ShapeLab/release
+  - If you run in debug mode, copy files from ./thirdPartyDependency/Qt5/debug to ./ShapeLab/debug
+
   
+
+
+
+## Usage
+
+### Input Meshes
+
+Our simulator takes two surface meshes $\mathcal{S}_{c}$ and $\mathcal{S}_{b}$
   
   
   
