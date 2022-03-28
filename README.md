@@ -4,7 +4,7 @@
 
 - Link: [Paper](https://arxiv.org/pdf/2203.02054.pdf) [Video](https://www.youtube.com/watch?v=DRwwh5kO4io) [Code](https://github.com/YingGwan/collisionAwareSOROSimulator)
 
-- Authors: Guoxin Fang∗ , Member, IEEE, Yingjun Tian∗ , Andrew Weightman, and Charlie C.L. Wang , Senior Member, IEEE
+- Authors: Guoxin Fang∗, Yingjun Tian∗, Andrew Weightman, and Charlie C.L. Wang
 
 - IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2022), October 23-27, 2022, Kyoto, Japan, under review, 2022
 
@@ -23,6 +23,10 @@
   - **Enable OpenMP**: ShapeLab Project Property -> 'Configuration Properties' -> c/c++ -> Language -> Open MP Support -> Select 'Yes (/openmp)'
   - **Open Console**: ShapeLab Project Property -> 'Configuration Proerties' -> Linker -> System -> Select 'Console (/SUBSYSTEM:CONSOLE)' in 'SubSystem'
   - **QT Version**: if you install a different qt version and meet with an issue open the UI after compile the project, you may first check and find 'Qt5Core.dll', 'Qt5Gui.dll', and 'Qt5Wdgets.dll' in the QT installed folder and add to '../shapeLab/release/' folder (Visual Studio will generate this folder after you compile the project). For Debug mode, you need to add 'Qt5Cored.dll', 'Qt5Guid.dll', and 'Qt5Wdgetsd.dll' to '../shapeLab/debug/' folder.
+  
+  
+  
+  
   
   
   
