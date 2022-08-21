@@ -56,4 +56,4 @@
     - You can either see a specific depth or the overlapping result
     - "Only Show Leaf Node" is included in this visualizer
   
-    ![image-20220821125016560](C:\Users\tiany\AppData\Roaming\Typora\typora-user-images\image-20220821125016560.png)
+    ![image-20220821125016560](https://raw.githubusercontent.com/YingGwan/TyporaUploadImg/main/typora202208/21/125313-454506.png)
