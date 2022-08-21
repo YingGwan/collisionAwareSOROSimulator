@@ -74,6 +74,11 @@ public:
     double weight;
 	bool show_innerEdge_split;
 
+	//used to draw bounding box
+	int _depthIdx = -1;
+	int _depth = -1;
+	bool _isLeafNode = false;
+
 private:
 	int indexno;
 	bool flags[8];

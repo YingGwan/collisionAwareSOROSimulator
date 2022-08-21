@@ -57,7 +57,7 @@ void DeformTet::ClearAll()
 
 void DeformTet::SetMesh(QMeshPatch* mesh) {
 	TetMesh = mesh;
-	//qDebug("Set mesh size: %d",TetMesh->GetTetraList().GetCount());
+	qDebug("Set mesh size: %d",TetMesh->GetTetraList().GetCount());
 	tetraSet.resize(TetMesh->GetTetraNumber());
 	int index = 0;
 	for (GLKPOSITION Pos = TetMesh->GetTetraList().GetHeadPosition(); Pos;) {
@@ -526,6 +526,8 @@ void DeformTet::Initialization_CR_All()
 	static bool flag_init = false;
 	//set node and face number
 
+	if (!flag_init)
+	{
 		//first execution: should build all matrices
 		flag_init = true;
 
@@ -536,61 +538,49 @@ void DeformTet::Initialization_CR_All()
 			//node->GetCoord3D_last(pp[0], pp[1], pp[2]);
 			//node->SetCoord3D(pp[0], pp[1], pp[2]);
 			if (node->isFixed == false && node->isHandle == false)
-			{
-				node->SetIndexNo(vertNum); vertNum++;
-			}
+				node->SetIndexNo(vertNum++);
 			else node->SetIndexNo(-1);
 
 		}
-		//cout << "non-fixed vertex Num = " << vertNum << endl;
-		//cout << "all vertices are " << TetMesh->GetNodeNumber() << endl;
+		cout << "non-fixed vertex Num = " << vertNum << endl;
+		cout << "all vertices are " << TetMesh->GetNodeNumber() << endl;
 
 		eleNum = 0;
 		for (GLKPOSITION Pos = TetMesh->GetTetraList().GetHeadPosition(); Pos;) {
 			QMeshTetra* Tet = (QMeshTetra*)TetMesh->GetTetraList().GetNext(Pos);
 			if (Tet->IsFixed()) Tet->SetIndexNo(-1); // as long as single vertex is fixed, the tet is fixed
-			else { Tet->SetIndexNo(eleNum); eleNum++; }
+			else Tet->SetIndexNo(eleNum++);
 		}
-	
-		//cout << "non-fixed element Num = " << eleNum << endl;
-		//cout << "all elements are " << TetMesh->GetTetraNumber() << endl;
+		cout << "non-fixed element Num = " << eleNum << endl;
+
 
 
 		springNum = 0;
 		for (GLKPOSITION pos = TetMesh->GetNodeList().GetHeadPosition(); pos != nullptr;)
 		{
 			QMeshNode* node = (QMeshNode*)TetMesh->GetNodeList().GetNext(pos);
+			
+			bool checkFaceFix = false;
+
 			//check whether this node is in collision
-			if (node->isCollided == true) 
+			//if (node->isCollided == true)springNum++;
+
+			/*for (int k = 0; k < 3; k++)
 			{
-				
-
-				/*if collided point is associated with fix point, then release this node*/
-				bool flag_continue = false;
-				for (int k = 0; k < 3; k++)
+				if (node->_collidedFacePtr->GetNodeRecordPtr(k)->isFixed)
 				{
-					int nIdx = node->_collidedFacePtr->GetNodeRecordPtr(k)->GetIndexNo();
-					//barycentric Coordinate relation: corresponding to three node
-					
-					
-					if (nIdx < 0)
-						flag_continue = true;
-
+					checkFaceFix = true;
+					break;
 				}
-
-
-				if (flag_continue == true)
-				{
-					//
-					node->isCollided = false;
-					continue;
-				}
-
+			}
+			if (checkFaceFix && node->isCollided == true) {
+				node->isCollided = false;
+			}*/
+			if(node->isCollided)
 				springNum++;
 
-			}
 		}
-		//qDebug("Spring number is %d",springNum);
+		qDebug("Spring number is %d",springNum);
 
 		springNum_env = 0;
 		for (GLKPOSITION pos = TetMesh->GetNodeList().GetHeadPosition(); pos != nullptr;)
@@ -599,7 +589,7 @@ void DeformTet::Initialization_CR_All()
 			//check whether this node is in collision
 			if (node->isCollided_env == true)	springNum_env++;
 		}
-		//qDebug("Spring env number is %d", springNum_env);
+		qDebug("Spring env number is %d", springNum_env);
 		//initialize all computing matrix
 		matA.resize(VELE * eleNum + springNum + springNum_env, vertNum);							//A  Mat should added several springs
 		matAT.resize(vertNum, VELE * eleNum + springNum + springNum_env);						//AT Mat should added several springs
@@ -617,171 +607,220 @@ void DeformTet::Initialization_CR_All()
 			VectorBSide[i] = Eigen::VectorXd::Zero(eleNum * VELE + springNum + springNum_env);	//B  Mat should added several springs
 		}
 
-		//qDebug("Assign memory...");
+		qDebug("Assign memory...");
 		flag_UpdateMatAMatB = true;	//should update B matrix as well
 
 
-	
-	
+	}
+	else
+	{
+		vertNum = 0;
+		for (GLKPOSITION pos = TetMesh->GetNodeList().GetHeadPosition(); pos != nullptr;) {
+			QMeshNode* node = (QMeshNode*)TetMesh->GetNodeList().GetNext(pos);
+			double pp[3] = { 0 };
+			//node->GetCoord3D_last(pp[0], pp[1], pp[2]);
+			//node->SetCoord3D(pp[0], pp[1], pp[2]);
+			if (node->isFixed == false && node->isHandle == false)
+				node->SetIndexNo(vertNum++);
+			else node->SetIndexNo(-1);
+
+		}
+		cout << "non-fixed vertex Num = " << TetMesh->GetNodeNumber() << endl;
+
+		eleNum = 0;
+		for (GLKPOSITION Pos = TetMesh->GetTetraList().GetHeadPosition(); Pos;) {
+			QMeshTetra* Tet = (QMeshTetra*)TetMesh->GetTetraList().GetNext(Pos);
+			if (Tet->IsFixed()) Tet->SetIndexNo(-1); // as long as single vertex is fixed, the tet is fixed
+			else Tet->SetIndexNo(eleNum++);
+		}
+		cout << "non-fixed element Num = " << eleNum << endl;
+
+
+
+		springNum = 0;
+		for (GLKPOSITION pos = TetMesh->GetNodeList().GetHeadPosition(); pos != nullptr;)
+		{
+			QMeshNode* node = (QMeshNode*)TetMesh->GetNodeList().GetNext(pos);
+			//check whether this node is in collision
+			if (node->isCollided == true)springNum++;
+		}
+		qDebug("Spring number is %d", springNum);
+		springNum_env = 0;
+		for (GLKPOSITION pos = TetMesh->GetNodeList().GetHeadPosition(); pos != nullptr;)
+		{
+			QMeshNode* node = (QMeshNode*)TetMesh->GetNodeList().GetNext(pos);
+			//check whether this node is in collision
+			if (node->isCollided_env == true)	springNum_env++;
+		}
+		qDebug("Spring env number is %d", springNum_env);
+		//initialize all computing matrix
+		matA.resize(VELE * eleNum + springNum + springNum_env, vertNum);							//A  Mat should added several springs
+		matAT.resize(vertNum, VELE * eleNum + springNum + springNum_env);						//AT Mat should added several springs
+
+		LocalCoord.resize(eleNum);
+		//These two terms can be kept fixed
+		InverseP.resize(eleNum);
+		LocalGoal.resize(eleNum);
+
+		VectorXPosition.resize(3);
+		VectorXPosition_Last.resize(3);
+		VectorBSide.resize(3);
+
+		for (int i = 0; i < 3; i++) {
+			VectorXPosition[i] = Eigen::VectorXd::Zero(vertNum);
+			VectorXPosition_Last[i] = Eigen::VectorXd::Zero(vertNum);
+			VectorBSide[i] = Eigen::VectorXd::Zero(eleNum * VELE + springNum + springNum_env);	//B  Mat should added several springs
+		}
+
+
+		flag_UpdateMatAMatB = true;	//should update B matrix as well
+
+		qDebug("Assign memory...");
+
+	}
 
 	//this->ComputeLocalGoalAndInverse();
 }
 
 void DeformTet::FillMatrixA_CR_All()
 {
-	static bool flag_init = false;
-	
-		flag_init = true;
-		//give memory to sparse matrix, to accerate the insert speed
-		matA.reserve(VectorXi::Constant(VELE * eleNum + springNum + springNum_env, 1000));
+	//give memory to sparse matrix, to accerate the insert speed
+	matA.reserve(VectorXi::Constant(VELE * eleNum + springNum + springNum_env, 1000));
 
-		float c1 = -1.0 / VELE, c2 = 1 + c1;
+	float c1 = -1.0 / VELE, c2 = 1 + c1;
 
-		for (GLKPOSITION Pos = TetMesh->GetTetraList().GetHeadPosition(); Pos;) {
-			QMeshTetra* Tetra = (QMeshTetra*)TetMesh->GetTetraList().GetNext(Pos);
-			if (Tetra->GetIndexNo() < 0) continue;
+	for (GLKPOSITION Pos = TetMesh->GetTetraList().GetHeadPosition(); Pos;) {
+		QMeshTetra* Tetra = (QMeshTetra*)TetMesh->GetTetraList().GetNext(Pos);
+		if (Tetra->GetIndexNo() < 0) continue;
 
-			int fdx = Tetra->GetIndexNo() * VELE;
-			double weight = 1.0;
+		int fdx = Tetra->GetIndexNo() * VELE;
+		double weight = 1.0;
 
-			if (Tetra->isRigid) weight = this->weightHard;
+		if (Tetra->isRigid) weight = this->weightHard;
 
-			int vdxArr[VELE];
-			for (int i = 0; i < VELE; i++) vdxArr[i] = Tetra->GetNodeRecordPtr(i + 1)->GetIndexNo();
+		int vdxArr[VELE];
+		for (int i = 0; i < VELE; i++) vdxArr[i] = Tetra->GetNodeRecordPtr(i + 1)->GetIndexNo();
 
-			for (int i = 0; i < VELE; i++) {
-				if (vdxArr[i] < 0) continue;
-				for (int j = 0; j < VELE; j++) {
-					if (vdxArr[j] < 0) continue;
-					if (i == j) matA.insert(fdx + j, vdxArr[i]) = c2 * weight;
-					else matA.insert(fdx + j, vdxArr[i]) = c1 * weight;
-				}
+		for (int i = 0; i < VELE; i++) {
+			if (vdxArr[i] < 0) continue;
+			for (int j = 0; j < VELE; j++) {
+				if (vdxArr[j] < 0) continue;
+				if (i == j) matA.insert(fdx + j, vdxArr[i]) = c2 * weight;
+				else matA.insert(fdx + j, vdxArr[i]) = c1 * weight;
 			}
 		}
-		//qDebug("Fill Mat A 1...");
-		//self collision spring
-		//traverse the node list and add spring to the last several rows of A matrix
-		int fdx = VELE * eleNum;
-		int springIdx = 0;
-		for (GLKPOSITION Pos = TetMesh->GetNodeList().GetHeadPosition(); Pos;) {
-			QMeshNode* Node = (QMeshNode*)TetMesh->GetNodeList().GetNext(Pos);
+	}
 
-			//if node should be added spring
-			if (Node->isCollided == true)
+	//qDebug("Fill Mat A 1...");
+	//self collision spring
+	//traverse the node list and add spring to the last several rows of A matrix
+	int fdx = VELE * eleNum;
+	int springIdx = 0;
+	for (GLKPOSITION Pos = TetMesh->GetNodeList().GetHeadPosition(); Pos;) {
+		QMeshNode* Node = (QMeshNode*)TetMesh->GetNodeList().GetNext(Pos);
+
+		//if node should be added spring
+		if (Node->isCollided == true)
+		{
+			int verIdx = Node->GetIndexNo();
+			matA.insert(fdx + springIdx, verIdx) = weightSpring * 1.0;
+
+
+			//barycentric coordinate of re-tracing point
+			int Q[3];
+			double B[3];
+			for (int k = 0; k < 3; k++)
 			{
-				int verIdx = Node->GetIndexNo();
-				matA.insert(fdx + springIdx, verIdx) = weightSpring * 1.0;
-
-
-				//barycentric coordinate of re-tracing point
-				int Q[3];
-				double B[3];
-				
-				bool flag_continue = false;
-				for (int k = 0; k < 3; k++)
-				{
-					Q[k] = Node->_collidedFacePtr->GetNodeRecordPtr(k)->GetIndexNo();
-					//barycentric Coordinate relation: corresponding to three node
-					B[k] = Node->_barycentricCoord[k];
-
-					if (Q[k] < 0)
-						flag_continue = true;
-
-				}
-
-				
-				if (flag_continue == true)
-				{
-					//
-					//Node->isCollided = false;
-					//continue;
-					//qDebug("\n********\nBUG 1\n********\n");
-				}
-
-				//qDebug("Spring: %d\nFace's point index: %d %d %d", springIdx,Q[0], Q[1], Q[2]);
-				//qDebug("Collided point barycentric: %lf %lf %lf", B[0], B[1], B[2]);
-
-				matA.insert(fdx + springIdx, Q[0]) = -weightSpring * B[0];
-				matA.insert(fdx + springIdx, Q[1]) = -weightSpring * B[1];
-				matA.insert(fdx + springIdx, Q[2]) = -weightSpring * B[2];
-
-				springIdx++;
-
-
+				Q[k] = Node->_collidedFacePtr->GetNodeRecordPtr(k)->GetIndexNo();
+				//barycentric Coordinate relation: corresponding to three node
+				B[k] = Node->_barycentricCoord[k];
 
 			}
+			//qDebug("Spring: %d\nFace's point index: %d %d %d", springIdx,Q[0], Q[1], Q[2]);
+			//qDebug("Collided point barycentric: %lf %lf %lf", B[0], B[1], B[2]);
 
-		}
-		//qDebug("Fill Mat A 2...");
-		//traverse the node list and add spring to the last several rows of A matrix
-		fdx = VELE * eleNum + springNum;
-		springIdx = 0;
-		for (GLKPOSITION Pos = TetMesh->GetNodeList().GetHeadPosition(); Pos;) {
-			QMeshNode* Node = (QMeshNode*)TetMesh->GetNodeList().GetNext(Pos);
+			matA.insert(fdx + springIdx, Q[0]) = -weightSpring * B[0];
+			matA.insert(fdx + springIdx, Q[1]) = -weightSpring * B[1];
+			matA.insert(fdx + springIdx, Q[2]) = -weightSpring * B[2];
 
-			//if node should be added spring
-			if (Node->isCollided_env == true)
-			{
-				int verIdx = Node->GetIndexNo();
-				matA.insert(fdx + springIdx, verIdx) = weightSpring_env * 1.0;
+			springIdx++;
 
-				springIdx++;
-			}
+
 
 		}
 
+	}
+	//qDebug("Fill Mat A 2...");
+	//traverse the node list and add spring to the last several rows of A matrix
+	fdx = VELE * eleNum + springNum;
+	springIdx = 0;
+	for (GLKPOSITION Pos = TetMesh->GetNodeList().GetHeadPosition(); Pos;) {
+		QMeshNode* Node = (QMeshNode*)TetMesh->GetNodeList().GetNext(Pos);
 
-		//qDebug("Fill Mat A 3...");
+		//if node should be added spring
+		if (Node->isCollided_env == true)
+		{
+			int verIdx = Node->GetIndexNo();
+			matA.insert(fdx + springIdx, verIdx) = weightSpring_env * 1.0;
 
-		matA.makeCompressed();
+			springIdx++;
+		}
+
+	}
+
+
+	//qDebug("Fill Mat A 3...");
+
+	matA.makeCompressed();
 	
 	
+
 	//qDebug("Fill Mat A...\n");
 }
 
 void DeformTet::FactorizeMatrixA_CR_All()
 {
-	/*static bool flag_init = false;
+	static bool flag_init = false;
 	if (!flag_init)
-	{*/
-		//flag_init = true;
+	{
+		flag_init = true;
 		Eigen::SparseMatrix<double> matATA(vertNum, vertNum);
 
 		matAT = matA.transpose();
 		matATA = matAT * matA;
 
 		Solver.compute(matATA);
-	//	printf("end factorize materix A\n");
-	//}
-	//else
-	//{
-	//	//if the spring structure is updated, we should update A Mat
-	//	if (flag_UpdateMatAMatB)
-	//	{
-	//		Eigen::SparseMatrix<double> matATA(vertNum, vertNum);
+		printf("end factorize materix A\n");
+	}
+	else
+	{
+		//if the spring structure is updated, we should update A Mat
+		if (flag_UpdateMatAMatB)
+		{
+			Eigen::SparseMatrix<double> matATA(vertNum, vertNum);
 
-	//		matAT = matA.transpose();
-	//		matATA = matAT * matA;
+			matAT = matA.transpose();
+			matATA = matAT * matA;
 
-	//		Solver.compute(matATA);
-	//		printf("end factorize materix A for the spring structure\n");
+			Solver.compute(matATA);
+			printf("end factorize materix A for the spring structure\n");
 
-	//	}
-	//	//Otherwise, we should not update A Mat
-	//	else {
-	//		//new
-	//		Eigen::SparseMatrix<double> matATA(vertNum, vertNum);
+		}
+		//Otherwise, we should not update A Mat
+		else {
+			//new
+			Eigen::SparseMatrix<double> matATA(vertNum, vertNum);
 
-	//		matAT = matA.transpose();
-	//		matATA = matAT * matA;
+			matAT = matA.transpose();
+			matATA = matAT * matA;
 
-	//		Solver.compute(matATA);
-	//		printf("end factorize materix A for the spring structure\n");
-	//	}
+			Solver.compute(matATA);
+			printf("end factorize materix A for the spring structure\n");
+		}
 
-	//}
+	}
 
-	//qDebug("Factorization finished...\n");
+	qDebug("Factorization finished...\n");
 
 }
 
@@ -816,14 +855,18 @@ void DeformTet::ComputeLocalGoalAndInverse_CR_All()
 	Eigen::MatrixXd rigidPos = Eigen::MatrixXd::Zero(3, 4);
 	Eigen::MatrixXd deformedPos = Eigen::MatrixXd::Zero(3, 4);
 	int outputCount = 0;
+	
+	int counter_body = 0;
+	int counter_chamber = 0;
+
+	
 	//For the deformation usage, every tetra should remain its initial shape
 	for (GLKPOSITION Pos = TetMesh->GetTetraList().GetHeadPosition(); Pos;) {
 		QMeshTetra* Tet = (QMeshTetra*)TetMesh->GetTetraList().GetNext(Pos);
-		int fdx = Tet->GetIndexNo(); 
+		int fdx = Tet->GetIndexNo(); if (fdx < 0) continue;
+
 		
-		if (fdx < 0) {
-			std::cout << "fixed TET, error" << std::endl;  continue;
-		}
+
 
 		QMeshNode* nodes[VELE];
 		Eigen::MatrixXd P = Eigen::MatrixXd::Zero(3, VELE);
@@ -838,10 +881,6 @@ void DeformTet::ComputeLocalGoalAndInverse_CR_All()
 			nodes[i]->GetCoord3D_last(rigidPos(0, i), rigidPos(1, i), rigidPos(2, i));
 			nodes[i]->GetCoord3D(deformedPos(0, i), deformedPos(1, i), deformedPos(2, i));
 
-			/*outputCount++;
-			if(outputCount%1000==0)
-				qDebug("(%3.3lf %3.3lf %3.3lf) -> (%3.3lf %3.3lf %3.3lf)", rigidPos(0, i), rigidPos(1, i), rigidPos(2, i), deformedPos(0, i), deformedPos(1, i), deformedPos(2, i));*/
-				//nodes[i]->GetCoord3D(P(0, i), P(1, i), P(2, i));
 			for (int j = 0; j < 3; j++)
 			{
 				center[j] += P(j, i);
@@ -858,36 +897,13 @@ void DeformTet::ComputeLocalGoalAndInverse_CR_All()
 		double expandRatio = 1.0;
 		for (int i = 0; i < VELE; i++) {
 			for (int j = 0; j < 3; j++) {
-				//if (Tet->isChamber[0]) P(j, i) = (P(j, i) - center[j]) * pow(expansion_ratio, 1.0 / 3); // for pneumatic-driven soft robot simulation
-				//else P(j, i) -= center[j];
-
-				//if (Tet->isChamber[0]) P(j, i) = (P(j, i) - center[j]) * pow(expansion_ratio, 1.0 / 3); // for pneumatic-driven soft robot simulation
-				//else
-				//{
-				//	//P(j, i) -= center[j]; 
-				//	rigidPos(j, i) -= (center[j]);
-				//	deformedPos(j, i) -= (centerCur[j]);
-				//}
-
+	
 				rigidPos(j, i) -= (center[j]);
 				deformedPos(j, i) -= (centerCur[j]);
-
-				//P(j, i) -= center[j];
-
 			}
 		}
 
-		//Local goal shape blending:
-		//calculate a rotation from cur(deformedPos) to ini(rigidPos).
-
-		//from p to x
-		// SVD(X P^T)
-
-		//from deformedPos to rigidPos
-		// SVD(rigidPos * deformedPos^T)
-		/*LocalGoal[fdx] = P;
-		InverseP[fdx] = (P.transpose()).completeOrthogonalDecomposition().pseudoInverse();*/
-
+		
 		///////////////////Eigen SVD decomposition/////////////////////////
 
 		
@@ -915,80 +931,137 @@ void DeformTet::ComputeLocalGoalAndInverse_CR_All()
 		
 
 
+		if (Tet->isChamber[0] == false)
+			counter_body++;
+		else
+			counter_chamber++;
+	
+	}
+	printf("Finish Compute local inverse!\nFinish Compute Local Goal...\n");
+
+	qDebug("\n*************************************\n");
+	qDebug("counter_body is %d and counter_chamber is %d and sum is %d", counter_body, counter_chamber, counter_body+ counter_chamber);
+	qDebug("total number of tet element is %d", TetMesh->GetTetraNumber());
+
+	qDebug("\n*************************************\n");
+}
+
+void DeformTet::ComputeLocalGoalAndInverse_CR_All(std::vector<Eigen::MatrixXd>& initShape)
+{
+
+	/*qDebug("\n*****************************************\nIn Collision Handling: %d\n*****************************************\n");
+	int i = 0;
+	for (int k = 0; k < 2; k++)
+	{
+		qDebug("-----%d-----", k);
+		qDebug("%3.3lf\t%3.3lf\t%3.3lf\t%3.3lf", initShape[k](0, 0), initShape[k](0, 1), initShape[k](0, 2), initShape[k](0, 3));
+		qDebug("%3.3lf\t%3.3lf\t%3.3lf\t%3.3lf", initShape[k](1, 0), initShape[k](1, 1), initShape[k](1, 2), initShape[k](1, 3));
+		qDebug("%3.3lf\t%3.3lf\t%3.3lf\t%3.3lf", initShape[k](2, 0), initShape[k](2, 1), initShape[k](2, 2), initShape[k](2, 3));
+		qDebug("%3.3lf\t%3.3lf\t%3.3lf\t%3.3lf", initShape[k](3, 0), initShape[k](3, 1), initShape[k](3, 2), initShape[k](3, 3));
+		qDebug("----------\n");
+	}*/
+	//
+	//static bool global_init = false;
+
+	//rigid pos: original pos
+	//deformed pos: now pos
+	Eigen::MatrixXd rigidPos = Eigen::MatrixXd::Zero(3, 4);
+	Eigen::MatrixXd deformedPos = Eigen::MatrixXd::Zero(3, 4);
+	int outputCount = 0;
+
+	int counter_body = 0;
+	int counter_chamber = 0;
+
+
+	//For the deformation usage, every tetra should remain its initial shape
+	for (GLKPOSITION Pos = TetMesh->GetTetraList().GetHeadPosition(); Pos;) {
+		QMeshTetra* Tet = (QMeshTetra*)TetMesh->GetTetraList().GetNext(Pos);
+		int fdx = Tet->GetIndexNo(); if (fdx < 0) continue;
 
 
 
 
-		//double expandRatio = 1.0;
-		//for (int i = 0; i < VELE; i++) {
-		//	for (int j = 0; j < 3; j++) {
-		//		//if (Tet->isChamber[0]) P(j, i) = (P(j, i) - center[j]) * pow(expansion_ratio, 1.0 / 3); // for pneumatic-driven soft robot simulation
-		//		//else P(j, i) -= center[j];
+		QMeshNode* nodes[VELE];
+		Eigen::MatrixXd P = Eigen::MatrixXd::Zero(3, VELE);
 
-		//		if (Tet->isChamber[0]) P(j, i) = (P(j, i) - center[j]) * pow(expansion_ratio, 1.0 / 3); // for pneumatic-driven soft robot simulation
-		//		else 
-		//		{ 
-		//			//P(j, i) -= center[j]; 
-		//			rigidPos(j, i) -= (center[j]);
-		//			deformedPos(j, i) -= (centerCur[j]);
-		//		}
+		double center[3] = { 0,0,0 };			//initial center
+		double centerCur[3] = { 0,0,0 };		//current center
 
 
-		//		//P(j, i) -= center[j];
-		//		
-		//	}
-		//}
+		for (int i = 0; i < VELE; i++) {
+			nodes[i] = Tet->GetNodeRecordPtr(i + 1);
+			nodes[i]->GetCoord3D_last(P(0, i), P(1, i), P(2, i));
+			nodes[i]->GetCoord3D_last(rigidPos(0, i), rigidPos(1, i), rigidPos(2, i));
+			nodes[i]->GetCoord3D(deformedPos(0, i), deformedPos(1, i), deformedPos(2, i));
 
-		////Local goal shape blending:
-		////calculate a rotation from cur(deformedPos) to ini(rigidPos).
+			for (int j = 0; j < 3; j++)
+			{
+				center[j] += P(j, i);
+				centerCur[j] += deformedPos(j, i);
+			}
+		}
 
-		////from p to x
-		//// SVD(X P^T)
+		for (int j = 0; j < 3; j++)
+		{
+			center[j] /= (double)VELE;
+			centerCur[j] /= (double)VELE;
+		}
 
-		////from deformedPos to rigidPos
-		//// SVD(rigidPos * deformedPos^T)
-		///*LocalGoal[fdx] = P;
-		//InverseP[fdx] = (P.transpose()).completeOrthogonalDecomposition().pseudoInverse();*/
+		double expandRatio = 1.0;
+		for (int i = 0; i < VELE; i++) {
+			for (int j = 0; j < 3; j++) {
 
-		/////////////////////Eigen SVD decomposition/////////////////////////
+				rigidPos(j, i) -= (center[j]);
+				deformedPos(j, i) -= (centerCur[j]);
+			}
+		}
 
-		//if (Tet->isChamber[0])
-		//{
-		//	LocalGoal[fdx] = P;
-		//	//qDebug("Chamber tet..");
-		//}
-		//else
-		//{
-		//	JacobiSVD<Eigen::MatrixXd> svd(rigidPos * deformedPos.transpose(), ComputeThinU | ComputeThinV);
-		//	Eigen::MatrixXd R = svd.matrixU() * svd.matrixV().transpose();
+		//we should keep body element
+		//we should keep body element
+		//rigidPos = initShape[bodyEleIndex];
+		/*if (Tet->isChamber[0] == false)
+			rigidPos = initShape[counter_body];*/
 
-		//	//deformPos : 3x4
-		//	//here, volume is not kept here
-		//	LocalGoal[fdx] = (1 - material_omega) * R * deformedPos + material_omega * rigidPos;
-		//	//
-		//	double expansionRatio = fabs(_calEleVolume(rigidPos) / _calEleVolume(LocalGoal[fdx]));
-		//	/*if (fdx % 1000 == 0)
-		//	{
-		//		printf("(%5d) (%.3lf,%.3lf) expansion ratio is %lf\n", fdx, _calEleVolume(rigidPos), _calEleVolume(LocalGoal[fdx]), expansionRatio);
-		//		cout << "initial mat is\n" << rigidPos << endl << "current mat is\n" << deformedPos << endl;
-		//		cout << "mixed mat is\n" << LocalGoal[fdx] << endl << endl << endl;
-		//	}*/
-		//	Eigen::Vector3d center_localGoal;
-		//	//3x4 
-		//	center_localGoal = LocalGoal[fdx].rowwise().mean();
-		//	for (int j = 0; j < 4; j++) LocalGoal[fdx].col(j) = LocalGoal[fdx].col(j) - center_localGoal;
+		///////////////////Eigen SVD decomposition/////////////////////////
 
-		//	LocalGoal[fdx] = LocalGoal[fdx] * pow(expansionRatio, 1.0 / 3);
-		//	//qDebug("Body tet..");
-		//}
-		
+
+		JacobiSVD<Eigen::MatrixXd> svd(rigidPos * deformedPos.transpose(), ComputeThinU | ComputeThinV);
+		Eigen::MatrixXd R = svd.matrixU() * svd.matrixV().transpose();
+
+		//deformPos : 3x4
+		//here, volume is not kept here
+		LocalGoal[fdx] = (1 - material_omega) * R * deformedPos + material_omega * rigidPos;
+		//
+		double expansionRatio = fabs(_calEleVolume(rigidPos) / _calEleVolume(LocalGoal[fdx]));
+		/*if (fdx % 1000 == 0)
+		{
+			printf("(%5d) (%.3lf,%.3lf) expansion ratio is %lf\n", fdx, _calEleVolume(rigidPos), _calEleVolume(LocalGoal[fdx]), expansionRatio);
+			cout << "initial mat is\n" << rigidPos << endl << "current mat is\n" << deformedPos << endl;
+			cout << "mixed mat is\n" << LocalGoal[fdx] << endl << endl << endl;
+		}*/
+		Eigen::Vector3d center_localGoal;
+		//3x4 
+		center_localGoal = LocalGoal[fdx].rowwise().mean();
+		for (int j = 0; j < 4; j++) LocalGoal[fdx].col(j) = LocalGoal[fdx].col(j) - center_localGoal;
+
+		LocalGoal[fdx] = LocalGoal[fdx] * pow(expansionRatio, 1.0 / 3);
+		//qDebug("Body tet..");
+
+
+
+		if (Tet->isChamber[0] == false)
+			counter_body++;
+		else
+			counter_chamber++;
 
 	}
-	//printf("Finish Compute local inverse!\nFinish Compute Local Goal...\n");
+	printf("Finish Compute local inverse!\nFinish Compute Local Goal...\n");
 
+	qDebug("\n*************************************\n");
+	qDebug("counter_body is %d and counter_chamber is %d and sum is %d", counter_body, counter_chamber, counter_body + counter_chamber);
+	qDebug("total number of tet element is %d", TetMesh->GetTetraNumber());
 
-
-
+	qDebug("\n*************************************\n");
 }
 
 void DeformTet::LocalProjection_CR_All()
@@ -1011,7 +1084,7 @@ void DeformTet::LocalProjection_CR_All()
 			}
 			catch (...)
 			{
-				//qDebug("Tetra %d idx %d",i,fdx);
+				qDebug("Tetra %d idx %d",i,fdx);
 			}
 			 
 		}
@@ -1160,24 +1233,24 @@ void DeformTet::PreProcess_CR_All()
 
 	FillMatrixA_CR_All();
 	FactorizeMatrixA_CR_All();
-	//cout << "finish preprocess the system" << endl;
+	cout << "finish preprocess the system" << endl;
 }
 
-bool DeformTet::RunWithCollisionResponse(int loop)
+bool DeformTet::RunWithCollisionResponse(std::vector<Eigen::MatrixXd>& initShape, int loop)
 {
 	
 	//collision detection with environment and correspondence calculation
 	//CollisionDetection();
-	//if (TetMesh->collidedPntNum == 0 && TetMesh->collidedPntNum_env == 0)
-	//{
-	//	//there is no collision, so return.
-	//	return true;
-	//}
+	if (TetMesh->collidedPntNum == 0 && TetMesh->collidedPntNum_env == 0)
+	{
+		//there is no collision, so return.
+		return true;
+	}
 
 	//qDebug("Self Collision Point: %d, While Collision Env Point: %d", TetMesh->collidedPntNum, TetMesh->collidedPntNum_env);
 	PreProcess_CR_All();
 	//qDebug("Pre-processing done");
-	ComputeLocalGoalAndInverse_CR_All();		//local goal should be updated.
+	ComputeLocalGoalAndInverse_CR_All(initShape);		//local goal should be updated.
 	//qDebug("Local goal update done");
 	for (int i = 0; i < loop; i++) 
 	{
@@ -1357,7 +1430,7 @@ void DeformTet::ComputeLocalGoalAndInverse()
 
 		//for (int i = 0; i < 3; i++) { for (int j = 0; j < 4; j++) InverseP[fdx](i, j) = GLKInverseP(i, j); }
 	}
-	//printf("Finish Compute local inverse!\n");
+	printf("Finish Compute local inverse!\n");
 }
 
 void DeformTet::FillMatrixA()

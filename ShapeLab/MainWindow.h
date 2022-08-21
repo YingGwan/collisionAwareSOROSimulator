@@ -86,6 +86,7 @@ private:
     double actuatorPara_twisting = 2.5; //.2.5 for twisting, 5.0 for expanding, 3.0 for finger
     int iterationTimeSOROSimulation = 1;
 
+
 public:
     void InputEnvironmentObstacle(void);
 
@@ -93,6 +94,8 @@ public:
     QMeshPatch* body_init;
     QMeshPatch* chamber_init;
     QMeshPatch* tetMesh;
+
+    std::vector<Eigen::MatrixXd> initShape[MAN_CHAMBER_SIZE];
 
     /*Free-form Membrane Simulation*/
 public:
@@ -105,6 +108,19 @@ public:
     QVector<QMeshPatch*> ChamberArray_tet;          //
 
     QMeshPatch* _freeformMem;       //ball obstacle
+    PolygenMesh* corrspondencePolySelfCollision_global;     //self-collision correspondence polygenMesh
+    PolygenMesh* collidedBoxPolySelfCollision_global;       //self-collision collided box polygenMesh
+    PolygenMesh* collidedTetPolySelfCollision_global;       //self-collision collided tet polygenMesh
+
+
+
+    PolygenMesh* corrspondencePoly_global;                  //collision with env
+
+
+
+
+    PolygenMesh* _aabbVisualizationPoly;
+    QMeshPatch* _aabbVisualizationMesh;
 
 public slots:
     void InputFreeFormMembrane(void);
@@ -116,7 +132,17 @@ public slots:
 
     void MoveBall(void);
     void TrajGeneration(void);
-    void ApplyRotation(void);
+
+    void ShowAABBTree(void);
+
+    void CheckBox_onlyLeafNode(int checkBoxState);
+    void CheckBox_overlappingNode(int checkBoxState);
+
+    void ChangeAABBVisualizedDepth(int sliderValue);
+
+
+    void OutputFiles(void);
+    
 };
 
 #endif // MAINWINDOW_H

@@ -95,7 +95,15 @@ void PolygenMesh::_buildDrawShadeList(bool bVertexNormalShading)
 
     glEnable(GL_NORMALIZE);
     glEnable(GL_LIGHTING);
-   isTransparent = false;
+
+    if (drawIdx == 3)
+        isTransparent = false;
+    else if (drawIdx == 0)
+        isTransparent = false;
+    else if (drawIdx == 2)
+        isTransparent = false;
+
+   // isTransparent = false;
     //qDebug("Not transparent...");
     if (isTransparent){
         //glEnable(GL_DEPTH_TEST);
@@ -141,23 +149,60 @@ void PolygenMesh::_buildDrawShadeList(bool bVertexNormalShading)
             }
                 
             else {
-                rr = gg = bb = 0.8f;
 
-                if (face->isHandleDraw || face->isHardDraw) {
-                    //rr = gg = bb = 0.2f;
-                    glColor3f(rr, gg, bb);
-                    // std::cout << "rigid!" << std::endl;
+                if (drawIdx == 0)
+                {
+                    rr = gg = bb = 0.81f;
+                 
+                }
+                else if (drawIdx == 1)
+                {
+                    rr = gg = bb = 0.81f;
+
+                }
+                else if (drawIdx == 2)
+                {
+                    //draw inchamber tetrahedron
+                    if (face->GetLeftTetra() != NULL && face->GetRightTetra() != NULL) {
+                        if (face->GetLeftTetra()->isChamber[0] == true || face->GetRightTetra()->isChamber[0] == true)
+                        {
+                            //this face belongs to one inchamber tet
+                            rr = gg = bb = 0.81f;
+                        }
+                        else
+                            continue;
+                    }
+                    else
+                        continue;
+                }
+                else if (drawIdx == 3)
+                {
+                    if (face->inner == false)
+                    {
+                        //qDebug("boundary");
+                        rr = gg = bb = 0.81;
+                    }
+                    else {//qDebug("Inner");
+                        continue;
+                    }
                 }
 
-                if (face->inner && !face->show_innerFace_split && !face->isChamberBoundary) continue;
-                //if (face->inner && !face->show_innerFace_split) continue;
+                else
+                {
+                    rr = gg = bb = 0.8f;
 
-                if(face->isChamberBoundary)  gg = bb = 0.2f;
-                glColor3f(rr, gg, bb);
-            }
+                    if (face->isHandleDraw || face->isHardDraw) {
+                        //rr = gg = bb = 0.2f;
+                        glColor3f(rr, gg, bb);
+                        // std::cout << "rigid!" << std::endl;
+                    }
 
-            if (this->drawIdx == 3) {
-                rr = gg = bb = 0.7f;
+                    if (face->inner && !face->show_innerFace_split && !face->isChamberBoundary) continue;
+                    //if (face->inner && !face->show_innerFace_split) continue;
+
+                    if (face->isChamberBoundary)  gg = bb = 0.2f;
+                }
+                
                 glColor3f(rr, gg, bb);
             }
 
@@ -168,7 +213,7 @@ void PolygenMesh::_buildDrawShadeList(bool bVertexNormalShading)
                         node=face->GetNodeRecordPtr(i);
                     else
                         node=face->GetNodeRecordPtr(i+k);
-                    bVertexNormalShading = true;
+                    //bVertexNormalShading = true;
                     if (face->inner) bVertexNormalShading = false;
                     if (bVertexNormalShading) { // && face->m_nIdentifiedPatchIndex>0) {
                         double normal[3];
@@ -228,7 +273,8 @@ void PolygenMesh::_changeValueToColor(int nType, float & nRed, float & nGreen, f
         {100, 149, 237},//cornflower blue
         {243, 20, 100},
         // 26th
-        {0,0,0}
+        {0,0,0},
+        {0,0,1}
     };
 
 //	printf("%d ",nType);
@@ -241,6 +287,8 @@ void PolygenMesh::_buildDrawMeshList()
 {
     GLKPOSITION Pos;
     GLKPOSITION PosEdge;
+    GLKPOSITION PosFace;
+    QMeshFace* tempFace;
     float rr, gg, bb;
 
     if (meshList.GetCount()==0) return;
@@ -249,6 +297,36 @@ void PolygenMesh::_buildDrawMeshList()
     glNewList(m_drawListID+1, GL_COMPILE);
     glDisable(GL_LIGHTING);
     glLineWidth(0.7);
+
+    if (drawIdx == 0)
+    {
+        glLineWidth(0.5);
+    }
+    else if (drawIdx == 1)
+    {
+        glLineWidth(0.75);
+    }
+    else if (drawIdx == 2)
+    {
+        glLineWidth(0.35);
+    }
+    else if (drawIdx == 3)
+    {
+        /*glEnd();
+        glEndList();
+        return;*/
+        glLineWidth(1.0);
+    }
+    else if (drawIdx == 4)
+    {
+        //bounding box
+        glLineWidth(1.5);
+        qDebug("Draw Bounding Box...");
+    }
+    else if (drawIdx == 11)
+    {
+        glLineWidth(1.5);
+    }
    /* if (edgeColor)
         glLineWidth(3.0);*/
 
@@ -291,10 +369,156 @@ void PolygenMesh::_buildDrawMeshList()
 
 
             }
+            else if (drawIdx == 0)
+            {
+                //body mesh
+                rr = gg = bb = 0.81;
+            }
+            else if (drawIdx == 1)
+            {
+                //chamber mesh
+                rr = gg = bb = 0.81;
+                bb = 1.0;
+            }
+            else if (drawIdx == 2)
+            {
+                rr = 0; gg = 0; bb = 0;
+                bool isBoundary = false;
+                for (PosFace = (edge->GetFaceList()).GetHeadPosition(); PosFace != NULL;) {
+                    tempFace = (QMeshFace*)((edge->GetFaceList()).GetNext(PosFace));
+                    if (tempFace->GetLeftTetra() == NULL || tempFace->GetRightTetra() == NULL)
+                    {
+                        //this edge is boundary edge
+                        isBoundary = true;
+                        break;
+                    }
+
+
+                }
+                if (isBoundary)
+                {
+                    bb = 0.4;
+                }
+            }
             else if (drawIdx == 4)
             {
-                rr = 1.0;
-                gg = bb = 0.0;
+                //qDebug("%d", edge->_depthIdx);
+                //draw bounding box
+                if (_drawOverlapping == false)
+                {
+                    //draw specific depth 
+                    if (draw_depth_idx != -1)
+                    {
+                        //if we want to show part of the bounding box set
+                        if (edge->_depthIdx != draw_depth_idx)
+                        {   //if the bounding box is not the bounding box we want to show,
+                            //just skip
+                            continue;
+                        }
+                        else
+                        {
+                            //if the bounding box is exactly in the RoI
+
+                            if (_drawAllNode == false)
+                            {//if not draw all nodes
+                                if (edge->_isLeafNode == false)
+                                    //if this is not leaf node
+                                    continue;
+                            }
+
+                            //draw one edge of bounding box
+                            _changeValueToColor((double)edge->_depthIdx, rr, gg, bb);
+
+                            glColor3f(rr, gg, bb);
+                            edge->GetStartPoint()->GetCoord3D(xx, yy, zz);
+                            glVertex3d(xx, yy, zz);
+                            edge->GetEndPoint()->GetCoord3D(xx, yy, zz);
+                            glVertex3d(xx, yy, zz);
+                        }
+
+                    }
+                    else
+                    {
+                        //we want to show all of the bounding box set
+
+                        if (_drawAllNode == false)
+                        {//if not draw all nodes
+                            if (edge->_isLeafNode == false)
+                                //if this is not leaf node
+                                continue;
+                        }
+                        _changeValueToColor(edge->_depthIdx, rr, gg, bb);
+                        
+                        glColor3f(rr, gg, bb);
+                        edge->GetStartPoint()->GetCoord3D(xx, yy, zz);
+                        glVertex3d(xx, yy, zz);
+                        edge->GetEndPoint()->GetCoord3D(xx, yy, zz);
+                        glVertex3d(xx, yy, zz);
+
+                    }
+                }
+                else
+                {
+                    //draw depth less and equal to the required depth
+                    if (draw_depth_idx != -1)
+                    {
+                        //if we want to show part of the bounding box set
+                        if (edge->_depthIdx > draw_depth_idx)
+                        {   //if the bounding box is not the bounding box we want to show,
+                            //just skip
+                            continue;
+                        }
+                        else
+                        {
+                            //if the bounding box is exactly in the RoI
+
+                            if (_drawAllNode == false)
+                            {//if not draw all nodes
+                                if (edge->_isLeafNode == false)
+                                    //if this is not leaf node
+                                    continue;
+                            }
+
+                            //draw one edge of bounding box
+                            _changeValueToColor((double)edge->_depthIdx, rr, gg, bb);
+
+                            glColor3f(rr, gg, bb);
+                            edge->GetStartPoint()->GetCoord3D(xx, yy, zz);
+                            glVertex3d(xx, yy, zz);
+                            edge->GetEndPoint()->GetCoord3D(xx, yy, zz);
+                            glVertex3d(xx, yy, zz);
+                        }
+
+                    }
+                    else
+                    {
+                        //we want to show all of the bounding box set
+
+                        if (_drawAllNode == false)
+                        {//if not draw all nodes
+                            if (edge->_isLeafNode == false)
+                                //if this is not leaf node
+                                continue;
+                        }
+                        _changeValueToColor((double)edge->_depthIdx, rr, gg, bb);
+
+                        glColor3f(rr, gg, bb);
+                        edge->GetStartPoint()->GetCoord3D(xx, yy, zz);
+                        glVertex3d(xx, yy, zz);
+                        edge->GetEndPoint()->GetCoord3D(xx, yy, zz);
+                        glVertex3d(xx, yy, zz);
+
+                    }
+
+                }
+
+                continue;
+            }
+            else if (drawIdx == 11)
+            {
+                //self-collision correspondence
+                rr = gg = bb = 0.81;
+                bb = 1.0;
             }
             else
             {
@@ -342,11 +566,29 @@ void PolygenMesh::_buildDrawNodeList()
     glPointSize(4.0);
     if (drawIdx == 4)
         glPointSize(5.0); 
+
+    if (drawIdx ==0)
+        glPointSize(5.0);
+    else if (drawIdx == 2)
+        glPointSize(8.0);
+    else if (drawIdx == 4)
+    {
+        //bounding box
+        glBegin(GL_POINTS);
+        glEnd();
+        glEndList();
+        return;
+
+    }
+    else if (drawIdx == 11)
+        glPointSize(10.0);
+
+
     glBegin(GL_POINTS);
     int meshIndex=0;
     for(Pos=meshList.GetHeadPosition();Pos!=NULL;meshIndex++) {
         mesh=(QMeshPatch *)(meshList.GetNext(Pos));
-
+        int counter_idx_11 = 0;
         for(PosNode=(mesh->GetNodeList()).GetHeadPosition();PosNode!=NULL;) {
             node=(QMeshNode *)((mesh->GetNodeList()).GetNext(PosNode));
 
@@ -410,7 +652,69 @@ void PolygenMesh::_buildDrawNodeList()
             {
                 rr = gg = 0.0; bb = 1.0;
             }
+            else if (drawIdx == 0)
+            {
+                //for the rest chamber mesh
+                if (node->shirftSelect == true)
+                {
+                    rr = gg = bb = 0.0;
+                    gg = 1.0;
+                    rr = 1.0;
+                    //printf("hello..\n");
+                }
+                else if (node->isFixed == true)
+                {
+                    //printf("hello..\n");
+                    rr = gg = bb = 0.0;
+                    gg = 1.0;
+                    rr = 1.0;
+                }
+                else
+                {
+                    rr = gg = bb = 1.0;
+                }
 
+               
+            }
+            else if (drawIdx == 2)
+            {
+                rr = gg = bb = 0.0;
+                //show rigid node
+                if (node->isFixed == true)
+                {
+                    rr = gg = bb = 0.0;
+                    rr = 1.0;
+                }
+                else if (node->selectedRigid == true)
+                {
+
+                    rr = 188.0 / 255.0;
+                    gg = 143.0 / 255.0;
+                    bb = 143.0 / 255.0;
+
+                }
+                else
+                {
+                    rr = 255.0 / 255.0;
+                    gg = 255.0 / 255.0;
+                    bb = 255.0 / 255.0;
+
+                }
+            }
+            else if (drawIdx == 11)
+            {
+                if (counter_idx_11 % 2 == 0)
+                {
+                    rr = gg = bb = 0.0;
+                    bb = 0.8;
+                }
+                else
+                {
+                    rr = gg = bb = 0.0;
+                    rr = 0.8;
+                }
+                counter_idx_11++;
+            }
 
             glColor3f(rr, gg, bb);
             node->SetColor(rr,gg,bb);

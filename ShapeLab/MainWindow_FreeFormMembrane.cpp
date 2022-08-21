@@ -18,9 +18,101 @@ void MainWindow::SignalSlotConnection(void)
     //
 
     connect(ui->pushButton_trajectoryGeneration, SIGNAL(released()), this, SLOT(TrajGeneration()));
-    connect(ui->pushButton_applyrotation, SIGNAL(released()), this, SLOT(ApplyRotation()));
+    connect(ui->pushButton_showAABB_Tree, SIGNAL(released()), this, SLOT(ShowAABBTree()));
+    
+    //checkBox_onlyLeafNode :stateChanged
+    connect(ui->checkBox_onlyLeafNode, SIGNAL(stateChanged(int)), this, SLOT(CheckBox_onlyLeafNode(int)));
+    connect(ui->checkBox_overlappingNode, SIGNAL(stateChanged(int)), this, SLOT(CheckBox_overlappingNode(int)));
+
+
+    //AABB Depth Visualizer
+    connect(ui->horizontalSlider_AABBTree, SIGNAL(valueChanged(int)), ui->lcdNumber_AABBTree, SLOT(display(int)));
+    //connect(ui->horizontalSlider_2, SIGNAL(sliderReleased()), this, SLOT(switchIteration()));
+    connect(ui->horizontalSlider_AABBTree, SIGNAL(valueChanged(int)), this, SLOT(ChangeAABBVisualizedDepth(int)));
+
+
+    connect(ui->pushButton_outputBody, SIGNAL(released()), this, SLOT(OutputFiles()));
+    connect(ui->pushButton_outputChamber, SIGNAL(released()), this, SLOT(OutputFiles()));
+    connect(ui->pushButton_outputTet, SIGNAL(released()), this, SLOT(OutputFiles()));
     //
+
+    
 }
+
+void MainWindow::OutputFiles(void)
+{
+    //
+    auto signalSender = (QPushButton*)sender(); //sender() holds the instance of the sender
+    qDebug("%s", signalSender->objectName().toStdString().c_str());
+    //lineEdit_bodyOutputName
+    //lineEdit_chamberOutputName
+    //lineEdit_tetOutputName
+    if (signalSender->objectName().toStdString().compare(string("pushButton_outputTet"))==0)
+    {
+
+        qDebug("output tet...");
+
+        string name = ui->lineEdit_tetOutputName->text().toStdString();
+        name = string("../output/") + name + ".tet";
+        char buffer[50];
+        strcpy(buffer, name.c_str());
+        ChamberArray_tet[0]->outputTETFile(buffer);
+
+    }
+
+    if (signalSender->objectName().toStdString().compare(string("pushButton_outputChamber")) == 0)
+    {
+        qDebug("output chamber...");
+
+        string name = ui->lineEdit_chamberOutputName->text().toStdString();
+        name = string("../output/") + name + ".obj";
+        char buffer[50];
+        strcpy(buffer, name.c_str());
+        ChamberArray_chamber[0]->outputOBJFile(buffer);
+
+
+    }
+
+    if (signalSender->objectName().toStdString().compare(string("pushButton_outputBody")) == 0)
+    {
+        qDebug("output body...");
+
+        string name = ui->lineEdit_bodyOutputName->text().toStdString();
+        name = string("../output/") + name + ".obj";
+        char buffer[50];
+        strcpy(buffer, name.c_str());
+        ChamberArray_body[0]->outputOBJFile(buffer);
+
+    }
+
+}
+
+void MainWindow::ChangeAABBVisualizedDepth(int sliderValue)
+{
+    int depthIdx = ui->horizontalSlider_AABBTree->value();
+
+    _aabbVisualizationPoly->draw_depth_idx = depthIdx;
+    pGLK->refresh(true);
+}
+
+void MainWindow::CheckBox_onlyLeafNode(int checkBoxState)
+{
+    if (checkBoxState == 0)
+        _aabbVisualizationPoly->_drawAllNode = true;
+    else
+        _aabbVisualizationPoly->_drawAllNode = false;
+    pGLK->refresh(true);
+}
+
+void MainWindow::CheckBox_overlappingNode(int checkBoxState)
+{
+    if (checkBoxState == 0)
+        _aabbVisualizationPoly->_drawOverlapping = false;
+    else
+        _aabbVisualizationPoly->_drawOverlapping = true;
+
+}
+
 
 void MainWindow:: TrajGeneration(void) {
 
@@ -65,9 +157,11 @@ void MainWindow:: TrajGeneration(void) {
     std::cout << meshGenTime << endl << deformationTime << endl << collRespTime <<endl;
     std::cout << tipPosSet <<std::endl;
     pGLK->refresh(true);
+
 }
 
 
+/*Input Soft Finger*/
 void MainWindow::InputFreeFormMembrane(void)
 {
     qDebug("Input chambers...");
@@ -91,7 +185,7 @@ void MainWindow::InputFreeFormMembrane(void)
 
     //twisting twistingHalf
     //                                                                          chamber index  shifting vec
-    inputSoftRobotModelWithShifting(body,chamber,tet, meshOperator,"twisting", to_string(1), shifting);
+    inputSoftRobotModelWithShifting(body,chamber,tet, meshOperator,"fingerNew", to_string(1), shifting);
         
     ChamberArray_body.push_back(body);
     ChamberArray_chamber.push_back(chamber);
@@ -103,6 +197,7 @@ void MainWindow::InputFreeFormMembrane(void)
 }
 
 
+//Generate Tet Mesh
 void MainWindow::GenerateChamberTetMesh(void)
 {
     static bool init = false;
@@ -112,7 +207,7 @@ void MainWindow::GenerateChamberTetMesh(void)
          generate/update TET mesh for simulation
     -------------------------------------------*/
 
-    std::string tetgenCommand = "Ya1.0";
+    std::string tetgenCommand = "Ya2.0";
     if (!init)
     {
         
@@ -121,11 +216,11 @@ void MainWindow::GenerateChamberTetMesh(void)
             
             meshOperation* meshOperator = new meshOperation;
 
-            //////generate TET Mesh
+            //generate TET Mesh
             //meshOperator->tetMeshGeneration_outerSkin_Chamber(ChamberArray_body[i], ChamberArray_chamber[i], ChamberArray_tet[i], tetgenCommand);
             //
             ///*Select the rigid node*/
-            //meshOperator->materialSpaceSelection_rigid(ChamberArray_tet[i], "twisting");
+            //meshOperator->materialSpaceSelection_rigid(ChamberArray_tet[i], "fingerNew");
            
             ///*Select the inflation tet*/
             //meshOperator->chamberSelection(ChamberArray_tet[i], ChamberArray_chamber[i], false);
@@ -137,11 +232,11 @@ void MainWindow::GenerateChamberTetMesh(void)
             //meshOperator->MannequinTetMeshSelectionOutput(ChamberArray_tet[i], i + 1);
 
             ////read saved result
-            ///*Read saved tet mesh*/
+            /*Read saved tet mesh*/
             meshOperator->tetMeshReading( ChamberArray_tet[i], i+1);
 
             /*Select the rigid node Keep*/
-            meshOperator->materialSpaceSelection_rigid(ChamberArray_tet[i], "twisting");
+            meshOperator->materialSpaceSelection_rigid(ChamberArray_tet[i], "fingerNew");
 
             /*Select the inflation tet*/
             meshOperator->readChamberSelection(ChamberArray_tet[i], i+1);
@@ -185,28 +280,29 @@ void MainWindow::GenerateChamberTetMesh(void)
     }
 
 
-    ui->pushButton_CollisionChecking->setEnabled(true);
+   
    
 }
 
+//finger deformation
 void MainWindow::ChamberDeformation(void)
 {
 
-    GenerateChamberTetMesh();
+    GenerateChamberTetMesh();               //generate tet mesh
     static int counter_pressed = 0;
     counter_pressed++;
     qDebug("Chamber deformation...");
     static bool init = false;
     static QDoubleSpinBox** boxPtr;
-    static std::vector<Eigen::MatrixXd> initShape[MAN_CHAMBER_SIZE];
+    
 
     if (!init)
     {
         boxPtr = new QDoubleSpinBox * [4];
         boxPtr[0] = ui->doubleSpinBox_Chamber1;
-        //boxPtr[1] = ui->doubleSpinBox_Chamber2;
-        //boxPtr[2] = ui->doubleSpinBox_Chamber3;
-        //boxPtr[3] = ui->doubleSpinBox_Chamber4;
+        boxPtr[1] = ui->doubleSpinBox_Chamber2;
+        boxPtr[2] = ui->doubleSpinBox_Chamber3;
+        boxPtr[3] = ui->doubleSpinBox_Chamber4;
     }
     /* -----------------------------------------
          Run Simulation
@@ -220,7 +316,6 @@ void MainWindow::ChamberDeformation(void)
         //soroIKOperator->expandRatio[0] = boxPtr[i]->value();
 
         double initialValue = boxPtr[i]->value();
-        qDebug("Expansion ratio is %lf",initialValue);
        /* if (counter_pressed >= 2)
         {
             initialValue = (double)counter_pressed / (double)(counter_pressed - 1);
@@ -232,32 +327,28 @@ void MainWindow::ChamberDeformation(void)
         if (!init)
         {
             soroIKOperator->buildSimulationSystem(initShape[i], true);
-           /* soroIKOperator->hyberSolverSingle(maxitertime, true);*/
-
-            soroIKOperator->hyberSolverSingle(maxitertime, false);
+            soroIKOperator->hyberSolverSingle(maxitertime, true);
         }
         else
         {
-           /* soroIKOperator->buildSimulationSystem(initShape[i], false);
-            soroIKOperator->hyberSolverSingle(maxitertime, true);*/
-
-            soroIKOperator->buildSimulationSystem(initShape[i], true);
-            soroIKOperator->hyberSolverSingle(maxitertime, false);
+            soroIKOperator->buildSimulationSystem(initShape[i], false);
+            soroIKOperator->hyberSolverSingle(maxitertime, true);
         }
 
-        Eigen::Vector3d centerPos = Eigen::Vector3d::Zero();
-        for (GLKPOSITION Pos = ChamberArray_tet[i]->GetNodeList().GetHeadPosition(); Pos;) {
-            QMeshNode* Node = (QMeshNode*)ChamberArray_tet[i]->GetNodeList().GetNext(Pos);
-            Eigen::Vector3d pos;  Node->GetCoord3D(pos);
-            centerPos += pos;
-        }
-        centerPos /= (double)ChamberArray_tet[i]->GetNodeNumber();
-        if (centerPos[1] > 90.0) {
-            for (GLKPOSITION Pos = ChamberArray_tet[i]->GetNodeList().GetHeadPosition(); Pos;) {
-                QMeshNode* Node = (QMeshNode*)ChamberArray_tet[i]->GetNodeList().GetNext(Pos);
-                Eigen::Vector3d pos;  Node->GetCoord3D(pos);
-                Node->SetCoord3D(pos(0), -1.0 * (pos(1) - 90.0) + 90.0, pos(2));
-            }
+        //in initShape[i], there will be X tet representing X
+        //in initShape[i][j], there will be 3x4 mat
+        qDebug("initial shape vector length is %d", initShape[i].size());
+        qDebug("initial shape mat is %d %d", initShape[i][0].rows(), initShape[i][0].cols());
+        //output initial shape
+        qDebug("\n*****************************************\nBeing Pressed: %d\n*****************************************\n", counter_pressed);
+        for (int k = 0; k < 2; k++)
+        {
+            qDebug("-----%d-----",k);
+            qDebug("%3.3lf\t%3.3lf\t%3.3lf\t%3.3lf", initShape[i][k](0, 0), initShape[i][k](0, 1), initShape[i][k](0, 2), initShape[i][k](0, 3));
+            qDebug("%3.3lf\t%3.3lf\t%3.3lf\t%3.3lf", initShape[i][k](1, 0), initShape[i][k](1, 1), initShape[i][k](1, 2), initShape[i][k](1, 3));
+            qDebug("%3.3lf\t%3.3lf\t%3.3lf\t%3.3lf", initShape[i][k](2, 0), initShape[i][k](2, 1), initShape[i][k](2, 2), initShape[i][k](2, 3));
+            qDebug("%3.3lf\t%3.3lf\t%3.3lf\t%3.3lf", initShape[i][k](3, 0), initShape[i][k](3, 1), initShape[i][k](3, 2), initShape[i][k](3, 3));
+            qDebug("----------\n");
         }
 
         meshOperation* meshOperator = new meshOperation;
@@ -269,24 +360,42 @@ void MainWindow::ChamberDeformation(void)
         delete meshOperator;
         delete soroIKOperator;
     }
-    printf("Simulation time: %3.3lf s\n", (double)(clock() - simTime) / (double)(CLOCKS_PER_SEC));
+
+    //check body element number
+    int bodyCount = 0;
+    for (GLKPOSITION pos = ChamberArray_tet[0]->GetTetraList().GetHeadPosition(); pos != nullptr;)
+    {
+        QMeshTetra* Tetra = (QMeshTetra*)ChamberArray_tet[0]->GetTetraList().GetNext(pos);
+        if (Tetra->isChamber[0] == false)
+        {
+            bodyCount++;
+        }
+
+    }
+    qDebug("Simulation time: %3.3lf s\n", (double)(clock() - simTime) / (double)(CLOCKS_PER_SEC));
+    qDebug("Body element number is %d", bodyCount);
+
+
+    
     DeformTet* deformTetOperator = new DeformTet;
-    deformTetOperator->setLastCoordinate(ChamberArray_tet[0]);	//first set last coord.
+    
     delete deformTetOperator;
     init = true;
-
     pGLK->refresh(true);
 }
 
 
-//obstacle
+//input obstacle
 void MainWindow::InputMem(void)
 {
     qDebug("Input outer membrane...");
 
     //std::string filePrefix = "..\\model\\";
     //std::string chamberFile = "../model/Cuboid9.tet";
-    std::string chamberFile = "../model/twisting_half_obstacle.tet";
+    //std::string chamberFile = "../model/blockObstacle.tet";
+    std::string chamberFile = "../model/tapeObstacle.tet";
+
+    
 
     
     //std::string chamberFile = "../model/newTwistingobstacle.tet";
@@ -297,11 +406,85 @@ void MainWindow::InputMem(void)
     PolygenMesh* volumeMesh = this->_buildPolygenMesh("Obstacle_TET");
     volumeMesh->GetMeshList().AddTail(memPatch);
     volumeMesh->resetTransparent();
+    volumeMesh->bVertexNormalShading = false;
     //volumeMesh->isVolume = true;
 
     volumeMesh->drawIdx = 3;
     Eigen::Vector3d nodePos, shift;
 
+    //shift mesh
+
+    /*shift[0] = -20;
+    shift[1] = 30;
+    shift[2] = 0;*/
+
+   /* shift[0] = -70;
+    shift[1] = 58;
+    shift[2] = 0;
+
+    for (GLKPOSITION pos = memPatch->GetNodeList().GetHeadPosition(); pos != nullptr;)
+    {
+        QMeshNode* Node = (QMeshNode*)memPatch->GetNodeList().GetNext(pos);
+        Node->GetCoord3D(nodePos);
+        nodePos = nodePos + shift;
+        Node->SetCoord3D(nodePos);
+    }
+
+    for (GLKPOSITION pos = memPatch->GetNodeList().GetHeadPosition(); pos != nullptr;)
+    {
+        QMeshNode* Node = (QMeshNode*)memPatch->GetNodeList().GetNext(pos);
+        Node->GetCoord3D(nodePos);
+
+        nodePos = (nodePos * 70/50) / 1.5;
+
+        Node->SetCoord3D(nodePos);
+    }*/
+
+
+    //now the ball is at the original
+
+
+
+
+
+    //select fix region
+    //calculate max and min for x and z axis
+    double xMin, xMax, zMin, zMax;
+    xMin = 10000;
+    xMax = -10000;
+    zMin = 10000;
+    zMax = -10000;
+
+    /* for (GLKPOSITION pos = memPatch->GetNodeList().GetHeadPosition(); pos != nullptr;)
+     {
+         QMeshNode* Node = (QMeshNode*)memPatch->GetNodeList().GetNext(pos);
+         Node->GetCoord3D(nodePos);
+         if (nodePos[0] < xMin)
+             xMin = nodePos[0];
+         if (nodePos[0] > xMax)
+             xMax = nodePos[0];
+
+         if (nodePos[2] < zMin)
+             zMin = nodePos[2];
+         if (nodePos[2] > zMax)
+             zMax = nodePos[2];
+
+     }*/
+
+     /* for (GLKPOSITION pos = memPatch->GetNodeList().GetHeadPosition(); pos != nullptr;)
+      {
+          QMeshNode* Node = (QMeshNode*)memPatch->GetNodeList().GetNext(pos);
+          Node->GetCoord3D(nodePos);
+          if (fabs(nodePos[0] - xMin) < 0.003 || fabs(nodePos[0] - xMax) < 0.003 || fabs(nodePos[2] - zMin) < 0.003 || fabs(nodePos[2] - zMax) < 0.003)
+          {
+              static int count = 0;
+              count++;
+
+              Node->isFixed = true;
+          }
+
+
+      }*/
 
     _freeformMem = memPatch;
 
@@ -310,25 +493,225 @@ void MainWindow::InputMem(void)
 }
 
 
+//collision checking and response
 //deformable object: ChamberArray_tet[0]
 //environment obstacle: _freeformMem
+
+PolygenMesh* testSelfCollidedPoly;
 void MainWindow::CollisionChecking(void)
 {
-    /*qDebug("Collision Checking and Correspondence Calculation...");*/
+    
+ //   //input self-collided example
+ //   std::string filePrefixTET = "..\\output\\";		//..\\selectionFile\\CollisionExample\\
+	//AABB\\1.tet  //iter_1.tet
+ //   std::string  filePostfixTET = "SelfCollisionExample.tet"; //horse.tet tetrahedron_test.tet CollisionExample\\CollisionExample.tet CollisionExample\\finger_selfcoll.tet CUBE0.tet
+ //   char* cstrTET = new char[(filePrefixTET + filePostfixTET).length() + 1];
+ //   strcpy(cstrTET, (filePrefixTET + filePostfixTET).c_str());
+ //   PolygenMesh* polygenMesh = new PolygenMesh();
+ //   polygenMesh->drawIdx = 0;
 
-    DeformTet* deformTetOperator2 = new DeformTet;
-    //deformTetOperator2->SelectFixRegion(ChamberArray_tet[0]);
-    delete deformTetOperator2;
+ //   
 
+ //   polygenMesh->ImportTETFile(cstrTET, filePostfixTET);
+ //   qDebug("After input tet");
+ //   //polygenMesh->setModelName("self_collided_example");
+ //   polygenMeshList.AddTail(polygenMesh);
+ //   polygenMesh->BuildGLList(polygenMesh->m_bVertexNormalShading);
+ //   pGLK->AddDisplayObj(polygenMesh, true);
+ //   QMeshPatch* _patch = (QMeshPatch*)polygenMesh->GetMeshList().GetHead();
+ //   testSelfCollidedPoly = polygenMesh;
+ //   updateTree();
+ //   pGLK->refresh(true);
+ //   
+
+
+ //   printf("Finish input selection \n");
+ //   pGLK->refresh(true);
+ //   ChamberArray_tet.push_back(_patch);
+
+ //   InputMem();
+ //   MoveBall();
+ //   
+ //   // /*Normal Code*/
+ //   qDebug("Collision Checking and Correspondence Calculation...");
+ //   static bool init_aabb = false;
+
+ //   DeformTet* deformTetOperator = new DeformTet;
+
+ //   AABBManager* collisionOperator = new AABBManager[MAN_CHAMBER_SIZE];
+ //   deformTetOperator->setLastCoordinate(ChamberArray_tet[0]);	//first set last coord.
+ //   deformTetOperator->SetMesh(ChamberArray_tet[0]);
+ //   
+ //   for (int i = 0; i < MAN_CHAMBER_SIZE; i++)
+ //   {
+ //       //obstacle tree construction
+ //       collisionOperator[i].GetVolumeObstacleMesh(_freeformMem);
+ //       collisionOperator[i].ObstacleTreeConstructionTop2Bot_rebuild();
+
+ //       //mark obstacle boundary face
+ //       collisionOperator[i].MarkBoundaryFaceForTetMesh(_freeformMem);
+ //   }
+
+ //   for (int i = 0; i < MAN_CHAMBER_SIZE; i++)
+ //   {
+ //       //for each chamber tet, find the collision 
+ //       collisionOperator[i].GetTetMesh(ChamberArray_tet[i]);
+
+ //       //self collision tree rebuild
+ //       collisionOperator[i].TreeConstructionTop2Bot_rebuild(ChamberArray_tet[i]);
+
+ //   }
+
+
+
+ //   //
+ //   //collision response
+ //   for (int collIter = 0; collIter < 2; collIter++) {
+
+ //       //environmental collision checking and correspondence calculation
+ //       //Collision checking with env and find the correspondence
+
+ //                                                                //number of RoI points
+ //       //below is used to debug
+ //       //zero is not collision, while one is in collision
+ //       Eigen::VectorXd collidedSumResult = Eigen::VectorXd::Zero(ChamberArray_tet[0]->GetNodeNumber());
+
+ //       //update collision status for last and this iteration
+ //       collisionOperator[0].UpdateEnvCollisionStatus(ChamberArray_tet[0]);
+
+ //       // check collision result with env
+ //       for (int i = 0; i < MAN_CHAMBER_SIZE; i++)
+ //       {
+ //           //each collision checking should return a vector indicating the result
+ //           //collisionOperator[i].CollisionWithEnvQueryChecking();
+ //           Eigen::VectorXd _collisionResult = collisionOperator[i].CollisionWithEnvQueryCheckingReturnResult(i + 1);
+ //           qDebug("Size is %d and %d", collidedSumResult.size(), _collisionResult.size());
+ //           collidedSumResult = collidedSumResult + _collisionResult;
+
+ //       }
+
+ //       //summarize collision situation 
+ //       collisionOperator[0].SumUpCollisionResultWithEnv(ChamberArray_tet[0], collidedSumResult);
+ //       qDebug("Checking collision with Env ends");
+ //       //check self collision
+ //       collisionOperator[0].SelfCollisionDetectionCorrespondenceChecking_softFinger();
+
+ //       
+
+ //       //deformTetOperator->RunWithCollisionResponse(initShape[0], 20);
+
+ //   }
+
+
+
+ //   /*Visualize self-collision checking correspondence*/
+ //   static bool init_corre_selfCollision = false;
+ //   if (!init_corre_selfCollision)
+ //   {
+
+ //       corrspondencePolySelfCollision_global = new PolygenMesh;
+ //       corrspondencePolySelfCollision_global->setModelName("Correspondence-SelfCollision");
+ //       corrspondencePolySelfCollision_global->BuildGLList(corrspondencePolySelfCollision_global->m_bVertexNormalShading);
+ //       pGLK->AddDisplayObj(corrspondencePolySelfCollision_global, true);
+ //       polygenMeshList.AddTail(corrspondencePolySelfCollision_global);
+ //       updateTree();
+
+ //       corrspondencePolySelfCollision_global->drawIdx = 11;
+ //       corrspondencePolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._corresPatch_selfCollision);
+
+ //       init_corre_selfCollision = true;
+ //   }
+ //   else
+ //   {
+ //       corrspondencePolySelfCollision_global->ClearAll();
+ //       corrspondencePolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._corresPatch_selfCollision);
+ //   }
+
+
+ //   /*Visualize collision with env correspondence checking*/
+ //   static bool init_corre = false;
+ //   if (!init_corre)
+ //   {
+ //       //_corresPatch
+ //       corrspondencePoly_global = new PolygenMesh;
+ //       corrspondencePoly_global->setModelName("Correspondence-CollisionEnv");
+ //       corrspondencePoly_global->BuildGLList(corrspondencePoly_global->m_bVertexNormalShading);
+ //       pGLK->AddDisplayObj(corrspondencePoly_global, true);
+ //       polygenMeshList.AddTail(corrspondencePoly_global);
+ //       updateTree();
+ //       corrspondencePoly_global->drawIdx = 11;
+ //       corrspondencePoly_global->GetMeshList().AddTail(collisionOperator[0]._corresPatch);
+ //       init_corre = true;
+ //   }
+ //   else
+ //   {
+ //       corrspondencePoly_global->ClearAll();
+ //       corrspondencePoly_global->GetMeshList().AddTail(collisionOperator[0]._corresPatch);
+
+ //   }
+
+
+ //   //visualize bounding box
+ //   static bool init_collidedBox= false;
+ //   if (!init_collidedBox)
+ //   {
+ //       collidedBoxPolySelfCollision_global = new PolygenMesh;
+ //       collidedBoxPolySelfCollision_global->setModelName("Collided BoundingBox");
+ //       
+ //       collidedBoxPolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._debugPatch);
+ //       polygenMeshList.AddTail(collidedBoxPolySelfCollision_global);
+ //       collidedBoxPolySelfCollision_global->BuildGLList(collidedBoxPolySelfCollision_global->m_bVertexNormalShading);
+ //       pGLK->AddDisplayObj(collidedBoxPolySelfCollision_global, true);
+ //       collidedBoxPolySelfCollision_global->drawIdx = 4;
+
+
+
+
+ //       collidedTetPolySelfCollision_global = new PolygenMesh;
+ //       collidedTetPolySelfCollision_global->setModelName("Collided Tet");
+
+ //       collidedTetPolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._debugPatch_tetDraw);
+ //       polygenMeshList.AddTail(collidedTetPolySelfCollision_global);
+ //       collidedTetPolySelfCollision_global->BuildGLList(collidedTetPolySelfCollision_global->m_bVertexNormalShading);
+ //       pGLK->AddDisplayObj(collidedTetPolySelfCollision_global, true);
+ //       collidedTetPolySelfCollision_global->drawIdx = 4;
+
+
+
+
+
+ //       updateTree();
+
+ //       init_collidedBox = true;
+ //   }
+ //   else
+ //   {
+
+ //       collidedBoxPolySelfCollision_global->ClearAll();
+ //       collidedBoxPolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._debugPatch);
+
+ //       collidedTetPolySelfCollision_global->ClearAll();
+ //       collidedTetPolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._debugPatch_tetDraw);
+
+ //   }
+
+ //   delete deformTetOperator;
+ //   delete[] collisionOperator;
+ //   pGLK->refresh(true);
+
+
+
+    /*Normal Code*/
+    
+    qDebug("Collision Checking and Correspondence Calculation...");
     static bool init_aabb = false;
-    //qDebug("10");
+ 
     DeformTet* deformTetOperator = new DeformTet;
    
     AABBManager* collisionOperator = new AABBManager[MAN_CHAMBER_SIZE];
-
+    deformTetOperator->setLastCoordinate(ChamberArray_tet[0]);	//first set last coord.
     deformTetOperator->SetMesh(ChamberArray_tet[0]);
-  // deformTetOperator->SelectFixRegion(ChamberArray_tet[0]);
-
+    deformTetOperator->SelectFixRegion(ChamberArray_tet[0]);
     for (int i = 0; i < MAN_CHAMBER_SIZE; i++)
     {
         //obstacle tree construction
@@ -337,8 +720,6 @@ void MainWindow::CollisionChecking(void)
 
         //mark obstacle boundary face
         collisionOperator[i].MarkBoundaryFaceForTetMesh(_freeformMem);
-       
-
     }
     
     for (int i = 0; i < MAN_CHAMBER_SIZE; i++)
@@ -352,17 +733,16 @@ void MainWindow::CollisionChecking(void)
     }
 
 
- 
-    qDebug("\n********************\nCollision response starts...\n********************\n");
+    
     //
     //collision response
-    for (int collIter = 0; collIter <4; collIter++) {
+    for (int collIter = 0; collIter < 3; collIter++) {
 
         //environmental collision checking and correspondence calculation
         //Collision checking with env and find the correspondence
 
                                                                  //number of RoI points
-       //below is used to debug
+        //below is used to debug
         //zero is not collision, while one is in collision
         Eigen::VectorXd collidedSumResult = Eigen::VectorXd::Zero(ChamberArray_tet[0]->GetNodeNumber());
 
@@ -375,45 +755,108 @@ void MainWindow::CollisionChecking(void)
             //each collision checking should return a vector indicating the result
             //collisionOperator[i].CollisionWithEnvQueryChecking();
             Eigen::VectorXd _collisionResult = collisionOperator[i].CollisionWithEnvQueryCheckingReturnResult(i+1);
-
-            //debug usage
-            //PolygenMesh* poly = this->_buildPolygenMesh("EnvironCorre");
-            //poly->GetMeshList().AddTail(collisionOperator[i]._corresPatch);
-
-           // qDebug("Size is %d and %d", collidedSumResult.size(), _collisionResult.size());
+            qDebug("Size is %d and %d", collidedSumResult.size(), _collisionResult.size());
             collidedSumResult = collidedSumResult + _collisionResult;
             
         }
-        
+
         //summarize collision situation 
         collisionOperator[0].SumUpCollisionResultWithEnv(ChamberArray_tet[0], collidedSumResult);
-
         //check self collision
-        //collisionOperator[0].SelfCollisionDetectionCorrespondenceChecking_softFinger();
+        collisionOperator[0].SelfCollisionDetectionCorrespondenceChecking_softFinger();
 
-       /* for (GLKPOSITION Pos = ChamberArray_tet[0]->GetNodeList().GetHeadPosition(); Pos != NULL; )
-        {
-            QMeshNode* node = (QMeshNode*)(ChamberArray_tet[0]->GetNodeList().GetNext(Pos));
-            node->isCollided = false;
-            node->isCollided_env = false;
-        }
-        ChamberArray_tet[0]->collidedPntNum = 0;
-        ChamberArray_tet[0]->collidedPntNum_env = 0;*/
-
-        //qDebug("Checking collision with Env ends");
-        //ChamberArray_tet[0]->collidedPntNum = 0;
-
-        //Collision Response
-        /*if (collIter == 1)
-            break;*/
-
+        qDebug("Checking collision with Env ends");
         
-        deformTetOperator->RunWithCollisionResponse(10);
-        qDebug("One collision response round finished...\n");
+        deformTetOperator->RunWithCollisionResponse(initShape[0],100);
         
     }
-    qDebug("\n********************\nCollision response finished...\n********************\n\n\n");
- 
+
+
+    
+   /*Visualize self-collision checking correspondence*/
+    static bool init_corre_selfCollision = false;
+    if (!init_corre_selfCollision)
+    {
+        
+        corrspondencePolySelfCollision_global = new PolygenMesh;
+        corrspondencePolySelfCollision_global->setModelName("Correspondence-SelfCollision");
+        corrspondencePolySelfCollision_global->BuildGLList(corrspondencePolySelfCollision_global->m_bVertexNormalShading);
+        pGLK->AddDisplayObj(corrspondencePolySelfCollision_global, true);
+        polygenMeshList.AddTail(corrspondencePolySelfCollision_global);
+        updateTree();
+
+        corrspondencePolySelfCollision_global->drawIdx = 11;
+        corrspondencePolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._corresPatch_selfCollision);
+
+        init_corre_selfCollision = true;
+    }
+    else
+    {
+        corrspondencePolySelfCollision_global->ClearAll();
+        corrspondencePolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._corresPatch_selfCollision);
+    }
+
+    
+    /*Visualize collision with env correspondence checking*/
+    static bool init_corre = false;
+    if (!init_corre)
+    {
+        //_corresPatch
+        corrspondencePoly_global = new PolygenMesh;
+        corrspondencePoly_global->setModelName("Correspondence-CollisionEnv");
+        corrspondencePoly_global->BuildGLList(corrspondencePoly_global->m_bVertexNormalShading);
+        pGLK->AddDisplayObj(corrspondencePoly_global, true);
+        polygenMeshList.AddTail(corrspondencePoly_global);
+        updateTree();
+        corrspondencePoly_global->drawIdx = 11;
+        corrspondencePoly_global->GetMeshList().AddTail(collisionOperator[0]._corresPatch);
+        init_corre = true;
+    }
+    else
+    {
+        corrspondencePoly_global->ClearAll();
+        corrspondencePoly_global->GetMeshList().AddTail(collisionOperator[0]._corresPatch);
+
+    }
+
+
+    //visualize bounding box
+    static bool init_collidedBox = false;
+    if (!init_collidedBox)
+    {
+        collidedBoxPolySelfCollision_global = new PolygenMesh;
+        collidedBoxPolySelfCollision_global->setModelName("Collided BoundingBox");
+    
+        collidedBoxPolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._debugPatch);
+        polygenMeshList.AddTail(collidedBoxPolySelfCollision_global);
+        collidedBoxPolySelfCollision_global->BuildGLList(collidedBoxPolySelfCollision_global->m_bVertexNormalShading);
+        pGLK->AddDisplayObj(collidedBoxPolySelfCollision_global, true);
+        collidedBoxPolySelfCollision_global->drawIdx = 4;
+    
+        collidedTetPolySelfCollision_global = new PolygenMesh;
+        collidedTetPolySelfCollision_global->setModelName("Collided Tet");
+    
+        collidedTetPolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._debugPatch_tetDraw);
+        polygenMeshList.AddTail(collidedTetPolySelfCollision_global);
+        collidedTetPolySelfCollision_global->BuildGLList(collidedTetPolySelfCollision_global->m_bVertexNormalShading);
+        pGLK->AddDisplayObj(collidedTetPolySelfCollision_global, true);
+        collidedTetPolySelfCollision_global->drawIdx = 4;
+    
+   
+        updateTree();
+    
+        init_collidedBox = true;
+    }
+    else
+    {
+    
+        collidedBoxPolySelfCollision_global->ClearAll();
+        collidedBoxPolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._debugPatch);
+    
+        collidedTetPolySelfCollision_global->ClearAll();
+        collidedTetPolySelfCollision_global->GetMeshList().AddTail(collisionOperator[0]._debugPatch_tetDraw);
+    
+    }
 
     delete deformTetOperator;
     delete[] collisionOperator;
@@ -421,7 +864,8 @@ void MainWindow::CollisionChecking(void)
     meshOperation* meshOperator = new meshOperation;
     meshOperator->updateOBJMesh_chamber(ChamberArray_chamber[0]);
     meshOperator->updateOBJMesh_skin(ChamberArray_body[0]);
- 
+
+
     delete meshOperator;
     pGLK->refresh(true);
 }
@@ -460,37 +904,53 @@ void MainWindow::MoveBall(void)
     //
 }
 
-void MainWindow::ApplyRotation(void)
+
+/*Update AABB Tree*/
+void MainWindow::ShowAABBTree(void)
 {
-    double move[3];
-
-    move[0] = ui->doubleSpinBox_rotationAngleX->value();
-    move[1] = ui->doubleSpinBox_rotationAngleY->value();
-    move[2] = ui->doubleSpinBox_rotationAngleZ->value();
-
-    double nodepos[3];
-    Eigen::Matrix3d m;
-    m = Eigen::AngleAxisd(move[0], Eigen::Vector3d::UnitX())
-        * Eigen::AngleAxisd(move[1], Eigen::Vector3d::UnitY())
-        * Eigen::AngleAxisd(move[2], Eigen::Vector3d::UnitZ());
-
-    Eigen::Vector3d pos3d;
-    Eigen::Vector3d posSum = {0.0,0.0,0.0};
-    for (GLKPOSITION pos = _freeformMem->GetNodeList().GetHeadPosition(); pos != nullptr;)
+    
+    static bool init_poly = false;
+    if (init_poly == false)
     {
-        QMeshNode* Node = (QMeshNode*)_freeformMem->GetNodeList().GetNext(pos);
-        Node->GetCoord3D(pos3d);
-        posSum += pos3d;
-    }
-    posSum /= (double)(_freeformMem->GetNodeNumber());
+        _aabbVisualizationPoly = new PolygenMesh;
+        _aabbVisualizationPoly->setModelName("AABB Tree");
+        _aabbVisualizationPoly->drawIdx = 4;
+        _aabbVisualizationPoly->_drawOverlapping = false;
+        
+        _aabbVisualizationMesh = new QMeshPatch;
+        _aabbVisualizationPoly->GetMeshList().AddTail(_aabbVisualizationMesh);
 
-    for (GLKPOSITION pos = _freeformMem->GetNodeList().GetHeadPosition(); pos != nullptr;)
-    {
-        QMeshNode* Node = (QMeshNode*)_freeformMem->GetNodeList().GetNext(pos);
-        Node->GetCoord3D(pos3d);
-        pos3d = m * (pos3d - posSum) + posSum;
-        Node->SetCoord3D(pos3d);
+        _aabbVisualizationPoly->BuildGLList(_aabbVisualizationPoly->m_bVertexNormalShading);
+        pGLK->AddDisplayObj(_aabbVisualizationPoly, true);
+        polygenMeshList.AddTail(_aabbVisualizationPoly);
+        updateTree();
+
+        init_poly = true;
     }
+
+    if (ui->checkBox_showAABB->isChecked() == true)
+    {
+        qDebug("Generate AABB Tree....");
+        AABBManager* _aabbManager = new AABBManager;
+        //This operator will handle both the first run and normal run
+        _aabbManager->TreeConstructionTop2Bot_rebuild(ChamberArray_tet[0]);
+        _aabbManager->operator_updateAABBTree(_aabbVisualizationPoly);
+
+        //set horizontal slider maximum
+        qDebug("AABB Tree Depth is %d (From Zero)", _aabbManager->GetTreeDepth());
+        ui->horizontalSlider_AABBTree->setMaximum(_aabbManager->GetTreeDepth());
+
+        delete _aabbManager;
+        qDebug("Bounding Box Set Visualizer Established...");
+    }
+    else
+    {
+        qDebug("AABB Init finished");
+    }
+  
+
+    
 
     pGLK->refresh(true);
+
 }

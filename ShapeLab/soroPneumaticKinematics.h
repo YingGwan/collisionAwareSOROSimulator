@@ -80,7 +80,7 @@ private:
 
     double eps = 1e-7;
     double weightHard = 3.0;  // init 5.0 10.0
-    double weightChamber = 1.0; // init 3.0, 1.0 for twisting, 0.5 for expansion, 3.0 for finger 0.3 for soft finger
+    double weightChamber = 0.3; // init 3.0, 1.0 for twisting, 0.5 for expansion, 3.0 for finger 0.3 for soft finger
 
    
 

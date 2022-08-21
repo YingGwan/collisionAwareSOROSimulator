@@ -1267,12 +1267,13 @@ bool QMeshPatch::inputTETFile(char *filename, bool bOBTFile)
 		nodeList.AddTail(node);
 		nodeArray[i] = node;
 	}
-
+	//qDebug("1");
 	for (i = 0; i<tetraNum; i++) {
 		sprintf(buf, ""); sprintf(linebuf, "");
 		fgets(linebuf, 255, fp);
 		int tet, n[4];
-		sscanf(linebuf, "%d %d %d %d %d \n", &tet, &n[0], &n[1], &n[2], &n[3]);
+		sscanf(linebuf, "%d %d %d %d %d\n", &tet, &n[0], &n[1], &n[2], &n[3]);
+		//qDebug("(%d,%d) %d %d %d %d",i+1, tetraNum, n[0] , n[1], n[2], n[3]);
 		if (tet != 4) { std::cout<< "not a tetra?" << std::endl; fclose(fp); return false; }
 		//recall the notation for face 1,2,3,4 - encoding for node index on each face
 		int n_index[4][3] = {
@@ -1337,7 +1338,7 @@ bool QMeshPatch::inputTETFile(char *filename, bool bOBTFile)
 			Tetra->SetFaceRecordPtr(j, f[j - 1]);
 		}
 	}
-
+	//qDebug("2");
 	/*for (Pos = nodeList.GetHeadPosition(); Pos != NULL;) {
 		node = (QMeshNode*)(nodeList.GetNext(Pos));
 		std::cout << node->GetIndexNo() << std::endl;
@@ -1507,6 +1508,56 @@ bool QMeshPatch::inputTETFile(char *filename, bool bOBTFile)
 
 	std::cout << "finish input tet file." << std::endl;
 	return true;
+}
+
+void QMeshPatch::outputTETFile(std::string filename)
+{
+	FILE* fp;
+	GLKPOSITION Pos;
+	QMeshNode* node;
+	QMeshFace* face;
+	QMeshTetra* tet;
+	double xx, yy, zz;
+	int i, num, index;
+
+
+	fp = fopen(filename.c_str(), "w");
+	if (!fp)
+	{
+		printf("===============================================\n");
+		printf("Can not open the data file - TET File Export!\n");
+		printf("===============================================\n");
+		return;
+	}
+
+	fprintf(fp, "%d vertices\n%d tets\n",this->GetNodeNumber(),this->GetTetraNumber());
+
+	i = 0;
+	//output node list
+	for (Pos = nodeList.GetHeadPosition(); Pos != NULL; i++) {
+		node = (QMeshNode*)(nodeList.GetNext(Pos));
+		node->GetCoord3D(xx, yy, zz);
+		node->SetIndexNo(i);
+		//		fprintf(fp,"v %.5f %.5f %.5f\n",(float)yy,(float)zz,(float)xx);
+		fprintf(fp, "%.6lf %.6lf %.6lf\n", xx, yy, zz);
+		//		fprintf(fp,"v %.12f %.12f %.12f\n",(float)zz,(float)xx,(float)yy);
+	}
+	/*this->GetNodeRecordPtr(1,2,3,4)*/
+	//output tet list
+
+	//fprintf(fp, "\n");
+		
+	for (Pos = this->GetTetraList().GetHeadPosition(); Pos != NULL;) {
+		tet = (QMeshTetra*)(this->GetTetraList().GetNext(Pos));
+		fprintf(fp, "4 %d %d %d %d\n",tet->GetNodeRecordPtr(1)->GetIndexNo(), tet->GetNodeRecordPtr(2)->GetIndexNo(), tet->GetNodeRecordPtr(3)->GetIndexNo(), tet->GetNodeRecordPtr(4)->GetIndexNo());
+
+	}
+
+	
+
+	fclose(fp);
+
+
 }
 
 void QMeshPatch::outputTrglOBJFile(char* filename)
@@ -1699,6 +1750,8 @@ GLKObList& QMeshPatch::GetNodeList()
 {
 	return nodeList;
 }
+
+
 
 void QMeshPatch::SetMaterial(bool bDir, int material)
 {

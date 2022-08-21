@@ -74,10 +74,32 @@ public:
     //visualization
     //@drawIdx: 0 -> body
     //          1 -> chamber
-    //          2 -> tet     transparent
-    //          3 -> tet normal
+    //          2 -> tet 
+
+    //          4 -> AABB Bounding box
+  
 
     int drawIdx = -1;       
+
+
+    //final version of visualization
+    //@drawIdx:  0 -> body surface mesh
+    //           1 -> chamber surface mesh
+    //           2 -> 
+    //           3 -> tet mesh
+
+    //           4 -> AABB Tree Bounding Box 
+
+    //          11 -> both self-collision and collision with env: correspondence
+
+    int paintIdx = -1;
+
+
+    //bounding box drawing
+    int draw_depth_idx = -1;        //if this value is -1: we draw all depth of bounding box
+                                    //if this value is bigger than -1, then draw the specific depth of bounding box
+    bool _drawAllNode = true;       //true  -> draw all nodes including internal nodes and leaf nodes
+    bool _drawOverlapping = false;  //false -> only single depth will be drawn
 
 
 private:

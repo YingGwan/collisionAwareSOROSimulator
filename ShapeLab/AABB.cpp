@@ -359,80 +359,88 @@ void AABBManager::_recursiveConstruction(int _nodeIdx, int _flag, AABB _old, int
 void AABBManager::_addSingleAABBboundingBox_debugQuery(AABB _aabb, QMeshPatch* _patch, int _depthIdx)
 {
 	
-	//static int edgePair[24] = { 0,1,1,2,2,3,3,0,4,5,5,6,6,7,7,4,0,4,1,5,2,6,3,7 };		//bounding box edges from point indices
-	//AABB box = _aabb;
-	//int startIndex = _patch->GetNodeNumber();
-	//QMeshNode* node = new QMeshNode;
-	//node->SetCoord3D(box.lowerBound[0], box.lowerBound[1], box.lowerBound[2]); _patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.upperBound[0], box.lowerBound[1], box.lowerBound[2]); _patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.upperBound[0], box.upperBound[1], box.lowerBound[2]); _patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.lowerBound[0], box.upperBound[1], box.lowerBound[2]); _patch->GetNodeList().AddTail(node);
+	static int edgePair[24] = { 0,1,1,2,2,3,3,0,4,5,5,6,6,7,7,4,0,4,1,5,2,6,3,7 };		//bounding box edges from point indices
+	AABB box = _aabb;
+	int startIndex = _patch->GetNodeNumber();
+	QMeshNode* node = new QMeshNode;
+	node->SetCoord3D(box.lowerBound[0], box.lowerBound[1], box.lowerBound[2]); _patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.upperBound[0], box.lowerBound[1], box.lowerBound[2]); _patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.upperBound[0], box.upperBound[1], box.lowerBound[2]); _patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.lowerBound[0], box.upperBound[1], box.lowerBound[2]); _patch->GetNodeList().AddTail(node);
 
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.lowerBound[0], box.lowerBound[1], box.upperBound[2]); _patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.upperBound[0], box.lowerBound[1], box.upperBound[2]); _patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.upperBound[0], box.upperBound[1], box.upperBound[2]); _patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.lowerBound[0], box.upperBound[1], box.upperBound[2]);
-	//GLKPOSITION temp = _patch->GetNodeList().AddTail(node);
-
-
-	//for (int i = 0; i < 12; i++)
-	//{
-	//	int EdgeStartNodeIdx = edgePair[i * 2 + 0];
-	//	int EdgeEndNodeIdx = edgePair[i * 2 + 1];
-
-	//	QMeshEdge* edge = new QMeshEdge;
-
-	//	GLKPOSITION STARTPOS = _patch->GetNodeList().FindIndexFrom(startIndex + EdgeStartNodeIdx, _patch->startIndexfromPos, _patch->startIndexfromPos_int);
-	//	GLKPOSITION ENDPOS = _patch->GetNodeList().FindIndexFrom(startIndex + EdgeEndNodeIdx, _patch->startIndexfromPos, _patch-> startIndexfromPos_int);
-
-	//	edge->SetStartPoint((QMeshNode*)_patch->GetNodeList().GetAt(STARTPOS));
-	//	edge->SetEndPoint((QMeshNode*)_patch->GetNodeList().GetAt(ENDPOS));
-	//	edge->_depthIdx = 3;
-	//	edge->_depth = _tree->depth;
-	//	_patch->GetEdgeList().AddTail(edge);
+	node = new QMeshNode;
+	node->SetCoord3D(box.lowerBound[0], box.lowerBound[1], box.upperBound[2]); _patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.upperBound[0], box.lowerBound[1], box.upperBound[2]); _patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.upperBound[0], box.upperBound[1], box.upperBound[2]); _patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.lowerBound[0], box.upperBound[1], box.upperBound[2]);
+	GLKPOSITION temp = _patch->GetNodeList().AddTail(node);
 
 
-	//}
-	//_patch->startIndexfromPos = temp;
-	//_patch->startIndexfromPos_int = _patch->GetNodeList().GetCount() - 1;
+	for (int i = 0; i < 12; i++)
+	{
+		int EdgeStartNodeIdx = edgePair[i * 2 + 0];
+		int EdgeEndNodeIdx = edgePair[i * 2 + 1];
+
+		QMeshEdge* edge = new QMeshEdge;
+
+		//qDebug("test1");
+		GLKPOSITION STARTPOS = _patch->GetNodeList().FindIndexFrom(startIndex + EdgeStartNodeIdx, _patch->startIndexfromPos, _patch->startIndexfromPos_int);
+		GLKPOSITION ENDPOS = _patch->GetNodeList().FindIndexFrom(startIndex + EdgeEndNodeIdx, _patch->startIndexfromPos, _patch-> startIndexfromPos_int);
+		//qDebug("test2");
+		edge->SetStartPoint((QMeshNode*)_patch->GetNodeList().GetAt(STARTPOS));
+		edge->SetEndPoint((QMeshNode*)_patch->GetNodeList().GetAt(ENDPOS));
+		edge->_depthIdx = 3;
+		edge->_depth = _tree->depth;
+		_patch->GetEdgeList().AddTail(edge);
+
+
+	}
+	_patch->startIndexfromPos = temp;
+	_patch->startIndexfromPos_int = _patch->GetNodeList().GetCount() - 1;
 }
 
 void AABBManager::_addSingleTetrahedron_debugQuery(QMeshTetra* tet, QMeshPatch* _patch)
 {
-	//GLKPOSITION temp;
-	//double pos[3];
-	//for (int i = 1; i <= 6; i++)
-	//{
-	//	QMeshNode* node = new QMeshNode;
-	//	tet->GetEdgeRecordPtr(i)->GetStartPoint()->GetCoord3D(pos[0],pos[1],pos[2]);
-	//	node->SetCoord3D(pos[0], pos[1], pos[2]);
-	//	_patch->GetNodeList().AddTail(node);
 
-	//	QMeshNode* node2 = new QMeshNode;
-	//	tet->GetEdgeRecordPtr(i)->GetEndPoint()->GetCoord3D(pos[0], pos[1], pos[2]);
-	//	node2->SetCoord3D(pos[0], pos[1], pos[2]);
-	//	temp = _patch->GetNodeList().AddTail(node2);
+	GLKPOSITION temp;
+	int start[6] = { 0,0,0,1,1,2 };
+	int end[6] = {1,2,3,2,3,3};
+	double pos[3];
+	for (int i = 0; i <= 5; i++)
+	{
 
-	//	QMeshEdge* edge = new QMeshEdge;
-	//	edge->SetStartPoint(node);
-	//	edge->SetEndPoint(node2);
-	//	_patch->GetEdgeList().AddTail(edge);
-	//	edge->_depthIdx = 17;
+		QMeshNode* node = new QMeshNode;
+		tet->GetNodeRecordPtr(start[i]+1)->GetCoord3D(pos[0], pos[1], pos[2]);
+		node->SetCoord3D(pos[0], pos[1], pos[2]);
+		/*qDebug("%d edge start point is %lf %lf %lf", i, pos[0], pos[1], pos[2]);*/
+		_patch->GetNodeList().AddTail(node);
 
-	//	/*_patch->GetNodeList().AddTail(tet->GetEdgeRecordPtr(i)->GetStartPoint());
-	//	temp = _patch->GetNodeList().AddTail(tet->GetEdgeRecordPtr(i)->GetEndPoint());
-	//	_patch->GetEdgeList().AddTail(tet->GetEdgeRecordPtr(i));
-	//	tet->GetEdgeRecordPtr(i)->_depthIdx = 17;*/
-	//}
-	//_patch->startIndexfromPos = temp;
-	//_patch->startIndexfromPos_int = _patch->GetNodeList().GetCount() - 1;
+		QMeshNode* node2 = new QMeshNode;
+		tet->GetNodeRecordPtr(end[i]+1)->GetCoord3D(pos[0], pos[1], pos[2]);
+		//qDebug("%d edge end point is %lf %lf %lf", i, pos[0], pos[1], pos[2]);
+		node2->SetCoord3D(pos[0], pos[1], pos[2]);
+		_patch->GetNodeList().AddTail(node2);
+
+		QMeshEdge* edge = new QMeshEdge;
+		edge->SetStartPoint(node);
+		edge->SetEndPoint(node2);
+		_patch->GetEdgeList().AddTail(edge);
+		edge->_depthIdx = 27;
+
+		/*_patch->GetNodeList().AddTail(tet->GetEdgeRecordPtr(i)->GetStartPoint());
+		temp = _patch->GetNodeList().AddTail(tet->GetEdgeRecordPtr(i)->GetEndPoint());
+		_patch->GetEdgeList().AddTail(tet->GetEdgeRecordPtr(i));
+		tet->GetEdgeRecordPtr(i)->_depthIdx = 17;*/
+	}
+
+	/*_patch->startIndexfromPos = temp;
+	_patch->startIndexfromPos_int = _patch->GetNodeList().GetCount() - 1;*/
 }
 
 //add a new bounding box to be further visualized 
@@ -489,53 +497,53 @@ void AABBManager::_addSingleAABBboundingBox(AABB _aabb, QMeshPatch* _patch, int 
 
 void AABBManager::_addSingleAABBboundingBox_compatiblewith_BuildAllTreeNode(AABBTREEArrayNode* _treeNode, AABB _aabb, QMeshPatch* _patch, int _depthIdx)
 {
-	//static int edgePair[24] = { 0,1,1,2,2,3,3,0,4,5,5,6,6,7,7,4,0,4,1,5,2,6,3,7 };		//bounding box edges from point indices
-	//AABB box = _aabb;
-	//int startIndex = _patch->GetNodeNumber();
-	//
-	//QMeshPatch* Patch = (QMeshPatch*)_refitBoundingBoxPoly->GetMeshList().GetHead();
-	//QMeshNode* node = new QMeshNode;
-	//node->SetCoord3D(box.lowerBound[0], box.lowerBound[1], box.lowerBound[2]); Patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.upperBound[0], box.lowerBound[1], box.lowerBound[2]); Patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.upperBound[0], box.upperBound[1], box.lowerBound[2]); Patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.lowerBound[0], box.upperBound[1], box.lowerBound[2]); Patch->GetNodeList().AddTail(node);
+	static int edgePair[24] = { 0,1,1,2,2,3,3,0,4,5,5,6,6,7,7,4,0,4,1,5,2,6,3,7 };		//bounding box edges from point indices
+	AABB box = _aabb;
+	int startIndex = _patch->GetNodeNumber();
 
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.lowerBound[0], box.lowerBound[1], box.upperBound[2]); Patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.upperBound[0], box.lowerBound[1], box.upperBound[2]); Patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.upperBound[0], box.upperBound[1], box.upperBound[2]); Patch->GetNodeList().AddTail(node);
-	//node = new QMeshNode;
-	//node->SetCoord3D(box.lowerBound[0], box.upperBound[1], box.upperBound[2]);
-	//GLKPOSITION temp = Patch->GetNodeList().AddTail(node);
+	QMeshPatch* Patch = (QMeshPatch*)_refitBoundingBoxPoly->GetMeshList().GetHead();
+	QMeshNode* node = new QMeshNode;
+	node->SetCoord3D(box.lowerBound[0], box.lowerBound[1], box.lowerBound[2]); Patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.upperBound[0], box.lowerBound[1], box.lowerBound[2]); Patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.upperBound[0], box.upperBound[1], box.lowerBound[2]); Patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.lowerBound[0], box.upperBound[1], box.lowerBound[2]); Patch->GetNodeList().AddTail(node);
+
+	node = new QMeshNode;
+	node->SetCoord3D(box.lowerBound[0], box.lowerBound[1], box.upperBound[2]); Patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.upperBound[0], box.lowerBound[1], box.upperBound[2]); Patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.upperBound[0], box.upperBound[1], box.upperBound[2]); Patch->GetNodeList().AddTail(node);
+	node = new QMeshNode;
+	node->SetCoord3D(box.lowerBound[0], box.upperBound[1], box.upperBound[2]);
+	GLKPOSITION temp = Patch->GetNodeList().AddTail(node);
 
 
-	//for (int i = 0; i < 12; i++)
-	//{
-	//	int EdgeStartNodeIdx = edgePair[i * 2 + 0];
-	//	int EdgeEndNodeIdx = edgePair[i * 2 + 1];
+	for (int i = 0; i < 12; i++)
+	{
+		int EdgeStartNodeIdx = edgePair[i * 2 + 0];
+		int EdgeEndNodeIdx = edgePair[i * 2 + 1];
 
-	//	QMeshEdge* edge = new QMeshEdge;
-	//	GLKPOSITION STARTPOS = Patch->GetNodeList().FindIndexFrom(startIndex + EdgeStartNodeIdx, startIndexfromPos, startIndexfromPos_int);
-	//	GLKPOSITION ENDPOS = Patch->GetNodeList().FindIndexFrom(startIndex + EdgeEndNodeIdx, startIndexfromPos, startIndexfromPos_int);
+		QMeshEdge* edge = new QMeshEdge;
+		GLKPOSITION STARTPOS = Patch->GetNodeList().FindIndexFrom(startIndex + EdgeStartNodeIdx, startIndexfromPos, startIndexfromPos_int);
+		GLKPOSITION ENDPOS = Patch->GetNodeList().FindIndexFrom(startIndex + EdgeEndNodeIdx, startIndexfromPos, startIndexfromPos_int);
 
-	//	edge->SetStartPoint((QMeshNode*)Patch->GetNodeList().GetAt(STARTPOS));
-	//	edge->SetEndPoint((QMeshNode*)Patch->GetNodeList().GetAt(ENDPOS));
-	//	edge->_depthIdx = _depthIdx;
-	//	edge->_depth = _tree->depth;
-	//	Patch->GetEdgeList().AddTail(edge);
+		edge->SetStartPoint((QMeshNode*)Patch->GetNodeList().GetAt(STARTPOS));
+		edge->SetEndPoint((QMeshNode*)Patch->GetNodeList().GetAt(ENDPOS));
+		edge->_depthIdx = _depthIdx;
+		edge->_depth = _tree->depth;
+		Patch->GetEdgeList().AddTail(edge);
 
-	//	edge->_isLeafNode = _treeNode->isLeaf;
+		edge->_isLeafNode = _treeNode->isLeaf;
 
-	//	
-	//}
 
-	//startIndexfromPos = temp;
-	//startIndexfromPos_int = Patch->GetNodeList().GetCount() - 1;
+	}
+
+	startIndexfromPos = temp;
+	startIndexfromPos_int = Patch->GetNodeList().GetCount() - 1;
 }
 
 void AABBManager::_updateSingleAABBboundingBox_compatiblewith_BuildAllTreeNode(AABBTREEArrayNode* _treeNode, AABB _aabb, QMeshPatch* _patch, int _depthIdx )	//depth index used to draw color
@@ -591,7 +599,7 @@ void AABBManager::_buildAllTreeNodeBoundingBox(void)
 		if (_tree->nodes[i].objectIndex == -1)
 			continue;
 		_addSingleAABBboundingBox_compatiblewith_BuildAllTreeNode(&(_tree->nodes[i]),_tree->nodes[i].collisionBox, _treeVisualizationMesh, _tree->nodes[i].depth);
-		
+		//qDebug("%d", _tree->nodes[i].depth);
 		if(i% interval ==0)
 			printf("Build Percent: %3.3lf \n",(double)(i+1)/(double)(_tree->nodeCount)*100.0);
 	}
@@ -687,13 +695,13 @@ void AABBManager::TreeConstructionTop2Bot(QMeshPatch* _tetMesh)
 		Tet->_idx = eleIndex;
 		Tet->CalCenCalBoundingBox();		//calculate tetrahedron center and its bounding box.
 
-		/*if (eleIndex < 5)
+		if (eleIndex < 5)
 		{
 			printf("Vertex pos: %lf %lf %lf\n", Tet->_center[0], Tet->_center[1], Tet->_center[2]);
-		}*/
+		}
 	}
 
-	//printf("\nStep 1 finished...\n");
+	printf("\nStep 1 finished...\n");
 	//------------------------------------------------------------------------------------------------
 
 
@@ -725,7 +733,7 @@ void AABBManager::TreeConstructionTop2Bot(QMeshPatch* _tetMesh)
 	// second, insert the root node
 	// _printBoundingBoxInfo("all node", _init);
 	_insert2Tree(0,-1, _init);			
-	//printf("\nStep 2 finished...\n");
+	printf("\nStep 2 finished...\n");
 	//------------------------------------------------------------------------------------------------
 	       
 
@@ -735,12 +743,12 @@ void AABBManager::TreeConstructionTop2Bot(QMeshPatch* _tetMesh)
 	AABB left, right;
 	splitBoundingBox(_init,&left,&right);
 
-	//printf("Start to call recursive function...\n");
+	printf("Start to call recursive function...\n");
 	
 	_recursiveConstruction(0, 1, left,1);
 	_recursiveConstruction(0, 2, right,1);
-	//printf("Stop calling  recursive function...\n");
-	//printf("\nStep 3 finished...\n");
+	printf("Stop calling  recursive function...\n");
+	printf("\nStep 3 finished...\n");
 	
 	//------------------------------------------------------------------------------------------------
 
@@ -847,7 +855,7 @@ void AABBManager::TreeConstructionTop2Bot_rebuild(QMeshPatch* _tetMesh)
 	
 	
 
-	//printf("\nStep 1 finished...\n");
+	printf("\nStep 1 finished...\n");
 	//------------------------------------------------------------------------------------------------
 
 
@@ -881,7 +889,7 @@ void AABBManager::TreeConstructionTop2Bot_rebuild(QMeshPatch* _tetMesh)
 	// second, insert the root node
 	// _printBoundingBoxInfo("all node", _init);
 	_insert2Tree(0, -1, _init);
-	//printf("\nStep 2 finished...\n");
+	printf("\nStep 2 finished...\n");
 	//------------------------------------------------------------------------------------------------
 
 
@@ -891,12 +899,12 @@ void AABBManager::TreeConstructionTop2Bot_rebuild(QMeshPatch* _tetMesh)
 	AABB left, right;
 	splitBoundingBox(_init, &left, &right);
 
-	//printf("Start to call recursive function...\n");
+	printf("Start to call recursive function...\n");
 
 	_recursiveConstruction_rebuild(0, 1, left, 1);
 	_recursiveConstruction_rebuild(0, 2, right, 1);
-	//printf("Stop calling  recursive function...\n");
-	//printf("\nStep 3 finished...\n");
+	printf("Stop calling  recursive function...\n");
+	printf("\nStep 3 finished...\n");
 
 	//------------------------------------------------------------------------------------------------
 
@@ -1358,10 +1366,16 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 		int tetNum = _debugPatch->GetTetraNumber();
 		int edgeNum = _debugPatch->GetEdgeNumber();
 		qDebug("Tet num is %d, while edge num is %d", tetNum, edgeNum);
+
+
 		//clean the collided bounding box
 		_debugPatch->ClearAllTet();
 		_debugPatch->startIndexfromPos = NULL;
 		_debugPatch->startIndexfromPos_int = 0;
+
+		_debugPatch_tetDraw->ClearAllTet();
+		_debugPatch_tetDraw->startIndexfromPos = NULL;
+		_debugPatch_tetDraw->startIndexfromPos_int = 0;
 
 		_corresPatch_selfCollision->ClearAllTet();
 
@@ -1371,6 +1385,13 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 	if (init_softFingerSelfCollision == false)
 	{
 		_debugPatch = new QMeshPatch;
+		_debugPatch->startIndexfromPos = NULL;
+		_debugPatch->startIndexfromPos_int = 0;
+
+		_debugPatch_tetDraw = new QMeshPatch;
+		_debugPatch_tetDraw->startIndexfromPos = NULL;
+		_debugPatch_tetDraw->startIndexfromPos_int = 0;
+
 		_corresPatch_selfCollision = new QMeshPatch;
 	}
 
@@ -1407,11 +1428,7 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 			//	2. when the point is on the outside of collided face but it is within a threshold, we keep the old spring and not call _singlePntQuery
 			//	3. if it is on the same side of collided face, then we keep on to _singlePntQuery
 			//II. if it is not in collision last time, directly call _singlePntQuery
-			if (node->isFixed == true)
-			{
-				node->isCollided = false;
-				continue;
-			}
+
 
 			//II. last time, if it is not in collision, we have nothing to keep, just run the normal function
 			if (node->isCollided_last == false)
@@ -1427,21 +1444,17 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 					Eigen::Vector3d normal;
 					Eigen::Vector3d xAxis = {1.0,0.0,0.0};
 
-					counter_collidedPoint++;
-					node->isCollided = true;
-					////filter out situation 1
-					//node->GetNormal(normal);
-					//if (fabs(normal.dot(xAxis)) > 0.3)
-					//{
-					//	counter_collidedPoint++;
-					//	node->isCollided = true;
-					//}
-					//else {
-					//	node->isCollided = false;
-					//}
+					node->GetNormal(normal);
+					if (fabs(normal.dot(xAxis)) > 0.3)
+					{
+						counter_collidedPoint++;
+						node->isCollided = true;
+					}
+					else {
+						node->isCollided = false;
+					}
 
-					//filter out situation 2
-				
+					if(node->isFixed) node->isCollided = false;
 
 				}
 				else { node->isCollided = false; }
@@ -1562,7 +1575,7 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 									}
 
 
-									//To delete
+									//Add correspondence
 									QMeshNode* correNodeStart = new QMeshNode;
 									QMeshNode* correNodeEnd = new QMeshNode;
 									Eigen::Vector3d corre1, corre2;
@@ -1579,6 +1592,27 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 									correEdge->SetStartPoint(correNodeStart);
 									correEdge->SetEndPoint(correNodeEnd);
 									_corresPatch_selfCollision->GetEdgeList().AddTail(correEdge);
+
+
+									////Add colliding bounding box
+									
+									
+
+									if (node->_collidedRealTreeLeafNodeIndexList.empty() == false)
+									{
+										
+										for (auto it2 = node->_collidedRealTreeLeafNodeIndexList.begin(); it2 != node->_collidedRealTreeLeafNodeIndexList.end(); ++it2)
+										{
+											_addSingleAABBboundingBox_debugQuery(_tree->nodes[(*it2)].collisionBox, _debugPatch);
+										}
+
+										for (auto it2 = node->_collidedRealTetraList.begin(); it2 != node->_collidedRealTetraList.end(); ++it2)
+										{
+											_addSingleTetrahedron_debugQuery(TetraPtrArray[(*it2)], _debugPatch_tetDraw);
+										}
+
+									}
+
 									/*if(t>10)
 										qDebug("(%4d) node collided too far", eleIndex);*/
 										//auto _reference = node->_rayOrigin + node->_rayDir * (node->_collidedT);
@@ -1665,7 +1699,7 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 					counter_collidedPoint++;
 
 					node->CalNormal();
-					/*Eigen::Vector3d normal;
+					Eigen::Vector3d normal;
 					Eigen::Vector3d xAxis = { 1.0,0.0,0.0 };
 
 					node->GetNormal(normal);
@@ -1676,7 +1710,8 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 					else {
 						node->isCollided = false;
 						continue;
-					}*/
+					}
+					if (node->isFixed) node->isCollided = false;
 
 
 					//for each collided point
@@ -1792,7 +1827,7 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 									}
 
 
-									//To delete
+									//Add Correspondence
 									QMeshNode* correNodeStart = new QMeshNode;
 									QMeshNode* correNodeEnd = new QMeshNode;
 									Eigen::Vector3d corre1, corre2;
@@ -1809,6 +1844,18 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 									correEdge->SetStartPoint(correNodeStart);
 									correEdge->SetEndPoint(correNodeEnd);
 									_corresPatch_selfCollision->GetEdgeList().AddTail(correEdge);
+
+
+									//Add colliding bounding box
+									for (auto it2 = node->_collidedRealTreeLeafNodeIndexList.begin(); it2 != node->_collidedRealTreeLeafNodeIndexList.end(); ++it2)
+									{
+										_addSingleAABBboundingBox_debugQuery(_tree->nodes[(*it2)].collisionBox, _debugPatch);
+									}
+
+									for (auto it2 = node->_collidedRealTetraList.begin(); it2 != node->_collidedRealTetraList.end(); ++it2)
+									{
+										_addSingleTetrahedron_debugQuery(TetraPtrArray[(*it2)], _debugPatch_tetDraw);
+									}
 									/*if(t>10)
 										qDebug("(%4d) node collided too far", eleIndex);*/
 										//auto _reference = node->_rayOrigin + node->_rayDir * (node->_collidedT);
@@ -1885,6 +1932,8 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 				}
 
 
+				//below is else's situation
+
 				//check the distance between node and its correspondence on the collided face (now is just free of intersection now)
 				//we need to protect this correpondence a little bit to give the constraints
 				Eigen::Vector3d nodePos;
@@ -1909,7 +1958,7 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 				{
 					//discard spring 
 					node->isCollided = false;
-					//qDebug("\n*********************\nOutside Boundary 3, discard it\n*********************\n");
+					qDebug("\n*********************\nOutside Boundary 3, discard it\n*********************\n");
 					//Sleep(50);
 				}
 				else {
@@ -1918,7 +1967,28 @@ void AABBManager::SelfCollisionDetectionCorrespondenceChecking_softFinger(void)
 					counter_collidedPoint++;
 					double nx[3];
 					node->GetNormal(node->_rayDir[0], node->_rayDir[1], node->_rayDir[2]);	//update spring direction only
-					//qDebug("\n*********************\nInside Boundary 3, Keep it\n*********************\n");
+					qDebug("\n*********************\nInside Boundary 3, Keep it\n*********************\n");
+
+
+					//Add Correspondence
+					QMeshNode* correNodeStart = new QMeshNode;
+					QMeshNode* correNodeEnd = new QMeshNode;
+					Eigen::Vector3d corre1, corre2;
+					node->GetCoord3D(corre1[0], corre1[1], corre1[2]);
+					correNodeStart->SetCoord3D(corre1[0], corre1[1], corre1[2]);
+					_corresPatch_selfCollision->GetNodeList().AddTail(correNodeStart);
+
+					corre2 = node->_rayOrigin + node->_rayDir * (node->_collidedT + coeff_extension_spring);
+					correNodeEnd->SetCoord3D(corre2[0], corre2[1], corre2[2]);
+					_corresPatch_selfCollision->GetNodeList().AddTail(correNodeEnd);
+
+					QMeshEdge* correEdge = new QMeshEdge;
+					correEdge->_selfCollisionType = 1;
+					correEdge->SetStartPoint(correNodeStart);
+					correEdge->SetEndPoint(correNodeEnd);
+					_corresPatch_selfCollision->GetEdgeList().AddTail(correEdge);
+
+
 					//Sleep(50);
 				}
 
@@ -2696,7 +2766,7 @@ bool AABBManager::_singlePntQuery(QMeshNode* _node)
 	bool _collided = _isCollided(pos, _tree->nodes[_tree->rootIndex].collisionBox);
 	if (_collided == false)
 	{
-		//qDebug("No Collision....\n");
+		qDebug("No Collision....\n");
 		return false;
 	}
 	
@@ -2753,7 +2823,7 @@ bool AABBManager::_singlePntQuery(QMeshNode* _node)
 		double pos_debug[3];
 		_node->GetCoord3D(pos_debug[0], pos_debug[1], pos_debug[2]);
 		//qDebug("9th point coordinate: %lf %lf %lf", pos_debug[0], pos_debug[1], pos_debug[2]);
-
+		
 		/*for (auto it = _node->_collidedRealTreeLeafNodeIndexList.begin(); it != _node->_collidedRealTreeLeafNodeIndexList.end(); ++it)
 		{
 			_addSingleAABBboundingBox_debugQuery(_tree->nodes[(*it)].collisionBox, _debugPatch);
@@ -2761,8 +2831,12 @@ bool AABBManager::_singlePntQuery(QMeshNode* _node)
 
 		for (auto it = _node->_collidedRealTetraList.begin(); it != _node->_collidedRealTetraList.end(); ++it)
 		{
-			_addSingleTetrahedron_debugQuery(TetraPtrArray[(*it)], _debugPatch);
+			_addSingleTetrahedron_debugQuery(TetraPtrArray[(*it)], _debugPatch_tetDraw);
 		}*/
+
+
+		
+
 		
 
 		return true;
@@ -3326,7 +3400,7 @@ void AABBManager::ObstacleTreeConstructionTop2Bot_rebuild(void)
 
 	}
 
-	//printf("\nStep 1 finished...\n");
+	printf("\nStep 1 finished...\n");
 	//------------------------------------------------------------------------------------------------
 
 
@@ -3362,7 +3436,7 @@ void AABBManager::ObstacleTreeConstructionTop2Bot_rebuild(void)
 	// second, insert the root node
 	// _printBoundingBoxInfo("all node", _init);
 	_insert2Tree_obstacle(0, -1, _init_obstacle);
-	//printf("\nStep 2 finished...\n");
+	printf("\nStep 2 finished...\n");
 	//------------------------------------------------------------------------------------------------
 
 
@@ -3372,17 +3446,17 @@ void AABBManager::ObstacleTreeConstructionTop2Bot_rebuild(void)
 	AABB left, right;
 	splitBoundingBox(_init_obstacle, &left, &right);
 
-	//printf("Start to call recursive function...\n");
+	printf("Start to call recursive function...\n");
 
 	_recursiveConstruction_rebuild_obstacle(0, 1, left, 1);
 	_recursiveConstruction_rebuild_obstacle(0, 2, right, 1);
-	//printf("Stop calling  recursive function...\n");
-	//printf("\nStep 3 finished...\n");
+	printf("Stop calling  recursive function...\n");
+	printf("\nStep 3 finished...\n");
 
 	//------------------------------------------------------------------------------------------------
 
 
-	//qDebug("Rebuilding of AABB Tree of Obstacle ends, the depth of obstacle tree is %d...", _obstacleTree->depth);
+	qDebug("Rebuilding of AABB Tree of Obstacle ends, the depth of obstacle tree is %d...", _obstacleTree->depth);
 }
 
 
@@ -3827,7 +3901,7 @@ Eigen::VectorXd AABBManager::CollisionWithEnvQueryCheckingReturnResult(int chamb
 	//	Step 2: collision checking and correspondence updating
 	//  now, only check collision of deformable object with obstacle
 
-	//qDebug("\nChecking Collision with Env...");
+	qDebug("Checking Collision with Env...");
 	int tetNodeIdx = 0;
 	for (GLKPOSITION Pos = _tetModelMesh->GetNodeList().GetHeadPosition(); Pos; tetNodeIdx++)
 	{
@@ -4104,7 +4178,7 @@ Eigen::VectorXd AABBManager::CollisionWithEnvQueryCheckingReturnResult(int chamb
 					{
 						//node->isCollided_env = false;
 						collidedResult[tetNodeIdx] = 0;
-						//qDebug("\n*********************\nOutside Boundary 3, discard it\n*********************\n");
+						qDebug("\n*********************\nOutside Boundary 3, discard it\n*********************\n");
 					}
 					else {
 						//keep spring but dont update the spring location
@@ -4139,7 +4213,7 @@ Eigen::VectorXd AABBManager::CollisionWithEnvQueryCheckingReturnResult(int chamb
 						correEdge->SetStartPoint(correNodeStart);
 						correEdge->SetEndPoint(correNodeEnd);
 						_corresPatch->GetEdgeList().AddTail(correEdge);
-						//qDebug("\n*********************\nInside Boundary 3, Keep it\n*********************\n");
+						qDebug("\n*********************\nInside Boundary 3, Keep it\n*********************\n");
 						//Sleep(50);
 					}
 
@@ -4198,7 +4272,7 @@ Eigen::VectorXd AABBManager::CollisionWithEnvQueryCheckingReturnResult(int chamb
 		}
 
 	}
-	qDebug("Potential collision number with environmental obstacle: %d", counterSpring_env);
+	qDebug("Collision with env: %d", counterSpring_env);
 	//_tetModelMesh->collidedPntNum_env = counterSpring_env;
 	////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//////////////
 	////then check the collision of obstacle mesh with deformable object
@@ -4318,6 +4392,24 @@ void AABBManager::SumUpCollisionResultWithEnv(QMeshPatch* tetMesh, Eigen::Vector
 		}
 	}
 	tetMesh->collidedPntNum_env = counter_collision_env;
+
+}
+
+void AABBManager::operator_updateAABBTree(PolygenMesh* poly)
+{
+	qDebug("Update AABB Tree...");
+
+	QMeshPatch* treeMesh = (QMeshPatch*)poly->GetMeshList().GetHead();
+
+	_treeVisualizationMesh = treeMesh;
+	_refitBoundingBoxPoly = poly;
+	
+	_treeVisualizationMesh->ClearAllTet();
+	//build all depth layers
+	_buildAllTreeNodeBoundingBox();
+
+	printf("Tree depth is %d\n", _tree->depth);
+
 
 }
 
@@ -4739,7 +4831,7 @@ void AABBManager::CollisionWithEnvQueryChecking(void)
 						correEdge->SetStartPoint(correNodeStart);
 						correEdge->SetEndPoint(correNodeEnd);
 						_corresPatch->GetEdgeList().AddTail(correEdge);
-						//qDebug("\n*********************\nInside Boundary 3, Keep it\n*********************\n");
+						qDebug("\n*********************\nInside Boundary 3, Keep it\n*********************\n");
 						//Sleep(50);
 					}
 

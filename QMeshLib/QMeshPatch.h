@@ -60,6 +60,7 @@ public:
 
     void outputOBJFile(char* filename, bool bOBTFile=false);
 	void outputTrglOBJFile(char* filename);
+	void outputTETFile(std::string filename);
 
 	void InverseOrientation();
     void ComputeBoundingBox(double &xmin, double &ymin, double &zmin, double &xmax, double &ymax, double &zmax);

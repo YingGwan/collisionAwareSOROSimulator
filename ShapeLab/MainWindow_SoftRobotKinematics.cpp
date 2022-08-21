@@ -24,186 +24,186 @@ DeformTet* deformTetOperator;				//deformation with collision
 std::vector<Eigen::MatrixXd> initShape;
 void MainWindow::soroSimulation_highExpandingModel()
 {
-	static int counter_run = 0;
-	counter_run++;
-	//fingerNew
-	//twisting
-	std::string modelName = "fingerNew";
-	if (counter_run == 1)
-	{
-		meshOperator = new meshOperation;
-		double expandVolume = 5.0;
+	//static int counter_run = 0;
+	//counter_run++;
+	////fingerNew
+	////twisting
+	//std::string modelName = "fingerNew";
+	//if (counter_run == 1)
+	//{
+	//	meshOperator = new meshOperation;
+	//	double expandVolume = 5.0;
 
-		/* ---- input model ---- */
-		body_init = new QMeshPatch;
-		chamber_init = new QMeshPatch;
-		tetMesh = new QMeshPatch;
-		soroIKOperator = new soroPneumaticKinematics;
+	//	/* ---- input model ---- */
+	//	body_init = new QMeshPatch;
+	//	chamber_init = new QMeshPatch;
+	//	tetMesh = new QMeshPatch;
+	//	soroIKOperator = new soroPneumaticKinematics;
 
-		collisionOperator = new AABBManager;
-		deformTetOperator = new DeformTet;
+	//	collisionOperator = new AABBManager;
+	//	deformTetOperator = new DeformTet;
 
-		deformTetOperator->getExpansionRatio(ui->doubleSpinBox_A1->value());
-		this->inputSoftRobotModel(body_init, chamber_init, tetMesh, meshOperator, modelName);
-	}
-
-
-
-	/* ---- simulation parameter ---- */
-	int remeshTime = ui->spinBox_iterTime->value();
-
-	Eigen::VectorXd chamberVolume(remeshTime + 1);
-	std::string tetgenCommand = "Ya0.5";
-	
-	int maxitertime = 1000;
-
-	long time = clock();
-
-	/* begin iteration */
-	for (int iter = 0; iter < remeshTime; iter++)
-	{
-
-		std::cout << " -------------------------------------------------- " <<
-			std::endl << " begin iteration #" << iter << std::endl <<
-			" -------------------------------------------------- " << std::endl << std::endl;
-
-		/* -----------------------------------------
-		 generate/update TET mesh for simulation
-		-------------------------------------------*/
-
-		if (iter == 0 && counter_run==1) {
-			meshOperator->tetMeshGeneration_outerSkin_Chamber(body_init, chamber_init, tetMesh, tetgenCommand);
-			//InputEnvironmentObstacle();
-			//pGLK->refresh(true);
-			//return;
-			meshOperator->materialSpaceSelection_rigid(tetMesh, modelName);
-			//meshOperator->buildTopologyConnection_chamberSelection_FAST(tetMesh, body_init, chamber_init, true);
-			if(ui->checkBox_readChamberRegion->isChecked()==true)
-				meshOperator->chamberSelection(tetMesh, chamber_init,true);
-			else
-				meshOperator->chamberSelection(tetMesh, chamber_init, false);
-			//meshOperator->chamberSelection_PQP(tetMesh, chamber_init, true);
-		}
-		else 
-		{
-			std::vector<Eigen::Vector3d> rigidNodePosSet; 
-			meshOperator->saveRigidRegion(tetMesh, rigidNodePosSet, true);
-			//meshOperator->tetMeshGeneration_outerSkinProtection_ChamberRemesh(body_init, chamber_init, tetMesh, tetgenCommand);
-			meshOperator->tetMeshGeneration_outerSkinProtection_ChamberRemesh_New(body_init, chamber_init, tetMesh, tetgenCommand);
-			meshOperator->loadRigidRegion(tetMesh, rigidNodePosSet);			
-		}
-
-		std::cout << std::endl << " ---- update chamber region selection..." << std::endl;
-
-		//meshOperator->topologyCheck(tetMesh);
-
-		/* build connection between tetMesh and chamber / body mesh --- Guanatee the topology of mesh won't change */
-		//meshOperator->chamberSelection(tetMesh, chamber_init);
-		//meshOperator->chamberSelection_PQP(tetMesh, chamber_init);
-
-		meshOperator->buildTopologyConnection(tetMesh, body_init, chamber_init);
-		meshOperator->selectShift_rigidRegion(tetMesh, body_init);
-		std::cout << std::endl << " ---- build topology connection between tetMesh and chamber mesh..." << std::endl;
-		
-		/* -----------------------------------------
-		 Run Simulation
-		-------------------------------------------*/
-		long simTime = clock();
-		if (iter == 0 && counter_run == 1) chamberVolume(iter) = meshOperator->chamberVolumeEvaluation(tetMesh);
-
-		soroIKOperator->getMesh(tetMesh, maxitertime);
-		/*soroIKOperator = new soroPneumaticKinematics(tetMesh, maxitertime);*/
-		soroIKOperator->expandRatio[0] = ui->doubleSpinBox_A1->value();
-
-		/*if (iter == 0) soroIKOperator->expandRatio[0] = expandVolume;
-		else soroIKOperator->expandRatio[0] = 2 * (iter + 1) / iter;*/
-
-		if (iter == 0 && counter_run == 1) soroIKOperator->buildSimulationSystem(initShape, true);
-		else soroIKOperator->buildSimulationSystem(initShape, false);
-
-		qDebug("8");
-		//soroIKOperator->updateExpandRatio(maxitertime);
-		soroIKOperator->hyberSolverSingle(maxitertime, false);
-		qDebug("9");
-		//delete soroIKOperator;
-		printf("Simulation time: %3.3lf s\n", (double)(clock() - simTime) / (double)(CLOCKS_PER_SEC));
-
-		//meshOperator->topologyCheck(tetMesh);
-		//meshOperator->updateOBJMesh_chamber(chamber_init); meshOperator->updateOBJMesh_skin(body_init);
-		//meshOperator->outputSimulationResult(tetMesh, body_init, chamber_init, modelName, iter, true, false);
-		/*if (counter_run == 2)
-		{
-			pGLK->refresh(true);
-			return;
-		}*/
-
-		/* collision checking and response */
-		if (modelName == "fingerNew") 
-		{
-			static bool init_aabb = false;
-			qDebug("10");
-			deformTetOperator->setLastCoordinate(tetMesh);	//first set last coord.
-			qDebug("11");
-			if (!init_aabb)
-			{
-				init_aabb = true;
-				collisionOperator->TreeConstructionTop2Bot(tetMesh);
-				deformTetOperator->SetMesh(tetMesh);
-				InputEnvironmentObstacle();
-				qDebug("12");
-			}
-			else
-			{
-				deformTetOperator->SetMesh(tetMesh);
-				collisionOperator->TreeConstructionTop2Bot_rebuild(tetMesh);			//deformable obj AABB Tree
-				qDebug("12.5");
-			}
-			
-			collisionOperator->TreeConstructionTop2Bot_refit_obstacle();			//refit obstacle AABB Tree
-			qDebug("13");
-
-			for (int collIter = 0; collIter < 4; collIter++) {
-				//Refit deformable object AABB Tree
-				collisionOperator->TreeConstructionTop2Bot_refit(tetMesh);
-				qDebug("%d, 14", collIter);
-				//Self collision detection of deformable object
-				collisionOperator->SelfCollisionDetectionCorrespondenceChecking();
-				qDebug("%d, 15", collIter);
-				//Collision checking with env and find the correspondence
-				collisionOperator->CollisionWithEnvQueryChecking();
-				qDebug("%d, 16", collIter);
-				////Collision checking with env and find the correspondence
-				deformTetOperator->RunWithCollisionResponse(30);
-				qDebug("%d, 17", collIter);
-			}
-
-		}
-
-		/* -----------------------------------------
-		 update pos, compute statics and output mesh
-		-------------------------------------------*/
-
-		chamberVolume(iter + 1) = meshOperator->chamberVolumeEvaluation(tetMesh);
-	
-		//meshOperator->updateOBJMesh_chamber(tetMesh,chamber_init);
-		meshOperator->updateOBJMesh_chamber(chamber_init); meshOperator->updateOBJMesh_skin(body_init);
-
-		meshOperator->laplacianSmoothSurface(chamber_init, tetMesh);
-
-		meshOperator->outputSimulationResult(tetMesh, body_init, chamber_init, modelName, iter, true, true);
+	//	deformTetOperator->getExpansionRatio(ui->doubleSpinBox_A1->value());
+	//	this->inputSoftRobotModel(body_init, chamber_init, tetMesh, meshOperator, modelName);
+	//}
 
 
-	}
-	printf(" \n TIME - simulation takes %ld ms.\n", clock() - time);
+
+	///* ---- simulation parameter ---- */
+	//int remeshTime = ui->spinBox_iterTime->value();
+
+	//Eigen::VectorXd chamberVolume(remeshTime + 1);
+	//std::string tetgenCommand = "Ya0.5";
+	//
+	//int maxitertime = 1000;
+
+	//long time = clock();
+
+	///* begin iteration */
+	//for (int iter = 0; iter < remeshTime; iter++)
+	//{
+
+	//	std::cout << " -------------------------------------------------- " <<
+	//		std::endl << " begin iteration #" << iter << std::endl <<
+	//		" -------------------------------------------------- " << std::endl << std::endl;
+
+	//	/* -----------------------------------------
+	//	 generate/update TET mesh for simulation
+	//	-------------------------------------------*/
+
+	//	if (iter == 0 && counter_run==1) {
+	//		meshOperator->tetMeshGeneration_outerSkin_Chamber(body_init, chamber_init, tetMesh, tetgenCommand);
+	//		//InputEnvironmentObstacle();
+	//		//pGLK->refresh(true);
+	//		//return;
+	//		meshOperator->materialSpaceSelection_rigid(tetMesh, modelName);
+	//		//meshOperator->buildTopologyConnection_chamberSelection_FAST(tetMesh, body_init, chamber_init, true);
+	//		if(ui->checkBox_readChamberRegion->isChecked()==true)
+	//			meshOperator->chamberSelection(tetMesh, chamber_init,true);
+	//		else
+	//			meshOperator->chamberSelection(tetMesh, chamber_init, false);
+	//		//meshOperator->chamberSelection_PQP(tetMesh, chamber_init, true);
+	//	}
+	//	else 
+	//	{
+	//		std::vector<Eigen::Vector3d> rigidNodePosSet; 
+	//		meshOperator->saveRigidRegion(tetMesh, rigidNodePosSet, true);
+	//		//meshOperator->tetMeshGeneration_outerSkinProtection_ChamberRemesh(body_init, chamber_init, tetMesh, tetgenCommand);
+	//		meshOperator->tetMeshGeneration_outerSkinProtection_ChamberRemesh_New(body_init, chamber_init, tetMesh, tetgenCommand);
+	//		meshOperator->loadRigidRegion(tetMesh, rigidNodePosSet);			
+	//	}
+
+	//	std::cout << std::endl << " ---- update chamber region selection..." << std::endl;
+
+	//	//meshOperator->topologyCheck(tetMesh);
+
+	//	/* build connection between tetMesh and chamber / body mesh --- Guanatee the topology of mesh won't change */
+	//	//meshOperator->chamberSelection(tetMesh, chamber_init);
+	//	//meshOperator->chamberSelection_PQP(tetMesh, chamber_init);
+
+	//	meshOperator->buildTopologyConnection(tetMesh, body_init, chamber_init);
+	//	meshOperator->selectShift_rigidRegion(tetMesh, body_init);
+	//	std::cout << std::endl << " ---- build topology connection between tetMesh and chamber mesh..." << std::endl;
+	//	
+	//	/* -----------------------------------------
+	//	 Run Simulation
+	//	-------------------------------------------*/
+	//	long simTime = clock();
+	//	if (iter == 0 && counter_run == 1) chamberVolume(iter) = meshOperator->chamberVolumeEvaluation(tetMesh);
+
+	//	soroIKOperator->getMesh(tetMesh, maxitertime);
+	//	/*soroIKOperator = new soroPneumaticKinematics(tetMesh, maxitertime);*/
+	//	soroIKOperator->expandRatio[0] = ui->doubleSpinBox_A1->value();
+
+	//	/*if (iter == 0) soroIKOperator->expandRatio[0] = expandVolume;
+	//	else soroIKOperator->expandRatio[0] = 2 * (iter + 1) / iter;*/
+
+	//	if (iter == 0 && counter_run == 1) soroIKOperator->buildSimulationSystem(initShape, true);
+	//	else soroIKOperator->buildSimulationSystem(initShape, false);
+
+	//	qDebug("8");
+	//	//soroIKOperator->updateExpandRatio(maxitertime);
+	//	soroIKOperator->hyberSolverSingle(maxitertime, false);
+	//	qDebug("9");
+	//	//delete soroIKOperator;
+	//	printf("Simulation time: %3.3lf s\n", (double)(clock() - simTime) / (double)(CLOCKS_PER_SEC));
+
+	//	//meshOperator->topologyCheck(tetMesh);
+	//	//meshOperator->updateOBJMesh_chamber(chamber_init); meshOperator->updateOBJMesh_skin(body_init);
+	//	//meshOperator->outputSimulationResult(tetMesh, body_init, chamber_init, modelName, iter, true, false);
+	//	/*if (counter_run == 2)
+	//	{
+	//		pGLK->refresh(true);
+	//		return;
+	//	}*/
+
+	//	/* collision checking and response */
+	//	if (modelName == "fingerNew") 
+	//	{
+	//		static bool init_aabb = false;
+	//		qDebug("10");
+	//		deformTetOperator->setLastCoordinate(tetMesh);	//first set last coord.
+	//		qDebug("11");
+	//		if (!init_aabb)
+	//		{
+	//			init_aabb = true;
+	//			collisionOperator->TreeConstructionTop2Bot(tetMesh);
+	//			deformTetOperator->SetMesh(tetMesh);
+	//			InputEnvironmentObstacle();
+	//			qDebug("12");
+	//		}
+	//		else
+	//		{
+	//			deformTetOperator->SetMesh(tetMesh);
+	//			collisionOperator->TreeConstructionTop2Bot_rebuild(tetMesh);			//deformable obj AABB Tree
+	//			qDebug("12.5");
+	//		}
+	//		
+	//		collisionOperator->TreeConstructionTop2Bot_refit_obstacle();			//refit obstacle AABB Tree
+	//		qDebug("13");
+
+	//		for (int collIter = 0; collIter < 4; collIter++) {
+	//			//Refit deformable object AABB Tree
+	//			collisionOperator->TreeConstructionTop2Bot_refit(tetMesh);
+	//			qDebug("%d, 14", collIter);
+	//			//Self collision detection of deformable object
+	//			collisionOperator->SelfCollisionDetectionCorrespondenceChecking();
+	//			qDebug("%d, 15", collIter);
+	//			//Collision checking with env and find the correspondence
+	//			collisionOperator->CollisionWithEnvQueryChecking();
+	//			qDebug("%d, 16", collIter);
+	//			////Collision checking with env and find the correspondence
+	//			deformTetOperator->RunWithCollisionResponse(30);
+	//			qDebug("%d, 17", collIter);
+	//		}
+
+	//	}
+
+	//	/* -----------------------------------------
+	//	 update pos, compute statics and output mesh
+	//	-------------------------------------------*/
+
+	//	chamberVolume(iter + 1) = meshOperator->chamberVolumeEvaluation(tetMesh);
+	//
+	//	//meshOperator->updateOBJMesh_chamber(tetMesh,chamber_init);
+	//	meshOperator->updateOBJMesh_chamber(chamber_init); meshOperator->updateOBJMesh_skin(body_init);
+
+	//	meshOperator->laplacianSmoothSurface(chamber_init, tetMesh);
+
+	//	meshOperator->outputSimulationResult(tetMesh, body_init, chamber_init, modelName, iter, true, true);
 
 
-	std::cout << std::endl << "Chamber Volume = " <<
-	std::endl << chamberVolume / chamberVolume(0) << std::endl;
-	
-	
+	//}
+	//printf(" \n TIME - simulation takes %ld ms.\n", clock() - time);
 
-	pGLK->refresh(true);
-	return;
+
+	//std::cout << std::endl << "Chamber Volume = " <<
+	//std::endl << chamberVolume / chamberVolume(0) << std::endl;
+	//
+	//
+
+	//pGLK->refresh(true);
+	//return;
 
 }
 
@@ -250,12 +250,12 @@ void MainWindow::inputSoftRobotModel(
 	PolygenMesh* surfaceMesh_body = this->_buildPolygenMesh(modelName+"_body");
 	surfaceMesh_body->drawIdx = 0;
 	surfaceMesh_body->meshList.AddTail(body_init);
-	surfaceMesh_body->setTransparent();
+	//surfaceMesh_body->setTransparent();
 
 	PolygenMesh* surfaceMesh_chamber = this->_buildPolygenMesh(modelName+"_chamber");
 	surfaceMesh_chamber->meshList.AddTail(chamber_init);
 	surfaceMesh_chamber->drawIdx = 1;
-	surfaceMesh_chamber->setTransparent();
+	//surfaceMesh_chamber->setTransparent();
 
 	/* generate TET mesh for simulation */
 	PolygenMesh* volumeMesh = this->_buildPolygenMesh(modelName+"_TET");
@@ -296,19 +296,20 @@ void MainWindow::inputSoftRobotModelWithShifting(
 	bool modelCombined = ui->checkBox_combinedInput->isChecked();
 	PolygenMesh* surfaceMesh_body = this->_buildPolygenMesh(modelName + modelIdx + "_body");
 	surfaceMesh_body->drawIdx = 0;
+	surfaceMesh_body->bVertexNormalShading = false;
 	surfaceMesh_body->meshList.AddTail(body_init);
-	surfaceMesh_body->setTransparent();
+	//surfaceMesh_body->setTransparent();
 
 	PolygenMesh* surfaceMesh_chamber = this->_buildPolygenMesh(modelName + modelIdx + "_chamber");
 	surfaceMesh_chamber->meshList.AddTail(chamber_init);
 	surfaceMesh_chamber->drawIdx = 1;
-	surfaceMesh_chamber->setTransparent();
+	surfaceMesh_chamber->bVertexNormalShading = false;
+	//surfaceMesh_chamber->setTransparent();
 
 	/* generate TET mesh for simulation */
 	PolygenMesh* volumeMesh = this->_buildPolygenMesh(modelName + modelIdx + "_TET");
 	volumeMesh->isVolume = true;
-	volumeMesh->drawIdx = 3;
-	
+	volumeMesh->drawIdx = 2;
 	volumeMesh->meshList.AddTail(tetMesh);
 
 	if (modelCombined) {

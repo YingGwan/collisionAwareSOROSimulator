@@ -80,6 +80,8 @@ public:
 	GLKPOSITION FindIndex(int index);
 	GLKPOSITION Find(GLKObject* element);
 
+	GLKPOSITION FindIndexFrom(int index, GLKPOSITION pos, int posIdx);
+
 	GLKPOSITION AddHead( GLKObject* newElement );
 	void AddHead( GLKObList* pNewList );
 	GLKPOSITION AddTail( GLKObject* newElement );

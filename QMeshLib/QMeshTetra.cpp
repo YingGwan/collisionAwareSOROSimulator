@@ -509,8 +509,6 @@ bool QMeshTetra::_judgeIsInPntList(QMeshNode* _node)
 
 bool QMeshTetra::IsFixed()
 {
-	//as long as one vertex is not fixed, the tet is not fixed
-	//all vertices should be fixed, the tet then will be fixed
 	if (GetNodeRecordPtr(1)->GetIndexNo() > -1 ||
 		GetNodeRecordPtr(2)->GetIndexNo() > -1 ||
 		GetNodeRecordPtr(3)->GetIndexNo() > -1 ||

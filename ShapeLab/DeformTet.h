@@ -82,7 +82,7 @@ public:
 	void AddPolygenToList(PolygenMesh* mesh);
 
 	//Main function.
-	bool RunWithCollisionResponse(int loop = 1);
+	bool RunWithCollisionResponse(std::vector<Eigen::MatrixXd> &initShape, int loop = 1);
 
 	//collision detection function.
 	bool CollisionDetection();
@@ -103,6 +103,7 @@ public:
 	void FillMatrixA_CR_All();
 	void FactorizeMatrixA_CR_All();
 	void ComputeLocalGoalAndInverse_CR_All();
+	void DeformTet::ComputeLocalGoalAndInverse_CR_All(std::vector<Eigen::MatrixXd>& initShape);
 	void LocalProjection_CR_All();
 	void FillVectorB_CR_All();
 	double _calEleVolume(Eigen::MatrixXd& _tet);
@@ -111,7 +112,7 @@ public:
 	bool flag_UpdateMatAMatB = false;
 	int springNum = 0;
 	double weightSpring = 5.0;
-	double weightHard = 1.0;		//1.0 5.0 original
+	double weightHard = 5.0;
 	double weightChamble = 0.3;
 
 	double coeff_extension_spring = 0.001; //0.02f;
@@ -127,7 +128,7 @@ public:
 
 
 	
-	double material_omega = 1.0;		//material rigidity
+	double material_omega = 0.05;		//material rigidity
 	double expansion_ratio = 1.0;		//chamber tetrahedron expansion ratio
 
 };

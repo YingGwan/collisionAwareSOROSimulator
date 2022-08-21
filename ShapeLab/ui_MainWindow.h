@@ -20,7 +20,9 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
@@ -74,8 +76,8 @@ public:
     QDockWidget *dockWidget;
     QWidget *dockWidgetContents;
     QGridLayout *gridLayout;
-    QTreeView *treeView;
     QSpacerItem *verticalSpacer_2;
+    QTreeView *treeView;
     QTabWidget *tabWidget;
     QWidget *tab;
     QVBoxLayout *verticalLayout_2;
@@ -83,40 +85,66 @@ public:
     QCheckBox *checkBox_combinedInput;
     QLabel *label;
     QSpinBox *spinBox_iterTime;
-    QCheckBox *checkBox_readChamberRegion;
-    QDoubleSpinBox *doubleSpinBox_A1;
-    QPushButton *pushButton_generateTETMesh;
-    QPushButton *pushButton_runCollisionChecking;
-    QPushButton *pushButton_clearAll;
     QComboBox *comboBox_planeDir;
     QSlider *horizontalSlider_slice_Multi_dir;
-    QSpacerItem *verticalSpacer_4;
+    QCheckBox *checkBox_readChamberRegion;
+    QPushButton *pushButton_generateTETMesh;
+    QPushButton *pushButton_runCollisionChecking;
+    QDoubleSpinBox *doubleSpinBox_A1;
+    QDoubleSpinBox *doubleSpinBox_A2;
+    QDoubleSpinBox *doubleSpinBox_A3;
+    QPushButton *pushButton_clearAll;
+    QPushButton *pushButton_trajectoryGeneration;
+    QPushButton *pushButton_CollisionResponse;
     QWidget *tab_2;
     QVBoxLayout *verticalLayout_3;
+    QHBoxLayout *horizontalLayout_9;
+    QCheckBox *checkBox_showAABB;
     QPushButton *pushButton_inputFourChambers;
     QPushButton *pushButton_inputMem;
     QPushButton *pushButton_GenerateChamberTetMesh;
+    QPushButton *pushButton_showAABB_Tree;
     QFrame *line;
-    QLabel *label_3;
     QDoubleSpinBox *doubleSpinBox_Chamber1;
+    QDoubleSpinBox *doubleSpinBox_Chamber2;
+    QDoubleSpinBox *doubleSpinBox_Chamber3;
+    QDoubleSpinBox *doubleSpinBox_Chamber4;
     QPushButton *pushButton_ChamberDeformation;
-    QPushButton *pushButton_CollisionChecking;
     QFrame *line_2;
-    QPushButton *pushButton_CollisionResponse;
-    QPushButton *pushButton_trajectoryGeneration;
-    QSpacerItem *verticalSpacer;
-    QWidget *tab_3;
-    QVBoxLayout *verticalLayout;
     QLabel *label_2;
-    QDoubleSpinBox *doubleSpinBox_rotationAngleX;
-    QDoubleSpinBox *doubleSpinBox_rotationAngleY;
-    QDoubleSpinBox *doubleSpinBox_rotationAngleZ;
-    QPushButton *pushButton_applyrotation;
     QDoubleSpinBox *doubleSpinBox_ballMoveX;
     QDoubleSpinBox *doubleSpinBox_ballMoveY;
     QDoubleSpinBox *doubleSpinBox_ballMoveZ;
     QPushButton *pushButton_MoveBall;
+    QPushButton *pushButton_CollisionChecking;
+    QSpacerItem *verticalSpacer;
+    QWidget *tab_3;
+    QVBoxLayout *verticalLayout;
+    QLabel *label_3;
+    QHBoxLayout *horizontalLayout_3;
+    QCheckBox *checkBox_onlyLeafNode;
+    QSpacerItem *horizontalSpacer;
+    QHBoxLayout *horizontalLayout_4;
+    QCheckBox *checkBox_overlappingNode;
+    QSpacerItem *horizontalSpacer_2;
+    QHBoxLayout *horizontalLayout_5;
+    QSlider *horizontalSlider_AABBTree;
+    QLCDNumber *lcdNumber_AABBTree;
+    QFrame *line_3;
+    QLabel *label_4;
+    QHBoxLayout *horizontalLayout_6;
+    QLineEdit *lineEdit_bodyOutputName;
+    QPushButton *pushButton_outputBody;
+    QHBoxLayout *horizontalLayout_7;
+    QLineEdit *lineEdit_chamberOutputName;
+    QPushButton *pushButton_outputChamber;
+    QHBoxLayout *horizontalLayout_8;
+    QLineEdit *lineEdit_tetOutputName;
+    QPushButton *pushButton_outputTet;
     QSpacerItem *verticalSpacer_3;
+    QWidget *tab_4;
+    QVBoxLayout *verticalLayout_4;
+    QSpacerItem *verticalSpacer_4;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuView;
@@ -126,7 +154,8 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(1389, 1014);
+        MainWindow->setEnabled(true);
+        MainWindow->resize(1360, 1014);
         MainWindow->setMouseTracking(true);
         MainWindow->setFocusPolicy(Qt::StrongFocus);
         MainWindow->setAcceptDrops(true);
@@ -281,12 +310,14 @@ public:
         MainWindow->setStatusBar(statusBar);
         selectionToolBar = new QToolBar(MainWindow);
         selectionToolBar->setObjectName(QString::fromUtf8("selectionToolBar"));
+        selectionToolBar->setEnabled(true);
         selectionToolBar->setMovable(false);
         selectionToolBar->setIconSize(QSize(25, 25));
         selectionToolBar->setFloatable(false);
         MainWindow->addToolBar(Qt::TopToolBarArea, selectionToolBar);
         dockWidget = new QDockWidget(MainWindow);
         dockWidget->setObjectName(QString::fromUtf8("dockWidget"));
+        dockWidget->setEnabled(true);
         QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -299,6 +330,10 @@ public:
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer_2, 2, 0, 1, 1);
+
         treeView = new QTreeView(dockWidgetContents);
         treeView->setObjectName(QString::fromUtf8("treeView"));
         treeView->setEnabled(true);
@@ -308,14 +343,11 @@ public:
         treeView->setIndentation(5);
         treeView->header()->setVisible(false);
 
-        gridLayout->addWidget(treeView, 8, 0, 1, 1);
-
-        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        gridLayout->addItem(verticalSpacer_2, 7, 0, 1, 1);
+        gridLayout->addWidget(treeView, 3, 0, 1, 1);
 
         tabWidget = new QTabWidget(dockWidgetContents);
         tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
+        tabWidget->setEnabled(true);
         tabWidget->setMaximumSize(QSize(16777215, 500));
         tabWidget->setIconSize(QSize(16, 16));
         tab = new QWidget();
@@ -335,48 +367,19 @@ public:
 
         label = new QLabel(tab);
         label->setObjectName(QString::fromUtf8("label"));
+        label->setEnabled(false);
 
         horizontalLayout_2->addWidget(label);
 
         spinBox_iterTime = new QSpinBox(tab);
         spinBox_iterTime->setObjectName(QString::fromUtf8("spinBox_iterTime"));
+        spinBox_iterTime->setEnabled(false);
         spinBox_iterTime->setValue(1);
 
         horizontalLayout_2->addWidget(spinBox_iterTime);
 
 
         verticalLayout_2->addLayout(horizontalLayout_2);
-
-        checkBox_readChamberRegion = new QCheckBox(tab);
-        checkBox_readChamberRegion->setObjectName(QString::fromUtf8("checkBox_readChamberRegion"));
-        checkBox_readChamberRegion->setEnabled(false);
-
-        verticalLayout_2->addWidget(checkBox_readChamberRegion);
-
-        doubleSpinBox_A1 = new QDoubleSpinBox(tab);
-        doubleSpinBox_A1->setObjectName(QString::fromUtf8("doubleSpinBox_A1"));
-        doubleSpinBox_A1->setMinimum(1.000000000000000);
-        doubleSpinBox_A1->setMaximum(100.000000000000000);
-        doubleSpinBox_A1->setValue(1.300000000000000);
-
-        verticalLayout_2->addWidget(doubleSpinBox_A1);
-
-        pushButton_generateTETMesh = new QPushButton(tab);
-        pushButton_generateTETMesh->setObjectName(QString::fromUtf8("pushButton_generateTETMesh"));
-
-        verticalLayout_2->addWidget(pushButton_generateTETMesh);
-
-        pushButton_runCollisionChecking = new QPushButton(tab);
-        pushButton_runCollisionChecking->setObjectName(QString::fromUtf8("pushButton_runCollisionChecking"));
-        pushButton_runCollisionChecking->setEnabled(false);
-
-        verticalLayout_2->addWidget(pushButton_runCollisionChecking);
-
-        pushButton_clearAll = new QPushButton(tab);
-        pushButton_clearAll->setObjectName(QString::fromUtf8("pushButton_clearAll"));
-        pushButton_clearAll->setEnabled(false);
-
-        verticalLayout_2->addWidget(pushButton_clearAll);
 
         comboBox_planeDir = new QComboBox(tab);
         comboBox_planeDir->addItem(QString());
@@ -389,14 +392,68 @@ public:
 
         horizontalSlider_slice_Multi_dir = new QSlider(tab);
         horizontalSlider_slice_Multi_dir->setObjectName(QString::fromUtf8("horizontalSlider_slice_Multi_dir"));
-        horizontalSlider_slice_Multi_dir->setEnabled(false);
         horizontalSlider_slice_Multi_dir->setOrientation(Qt::Horizontal);
 
         verticalLayout_2->addWidget(horizontalSlider_slice_Multi_dir);
 
-        verticalSpacer_4 = new QSpacerItem(20, 237, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        checkBox_readChamberRegion = new QCheckBox(tab);
+        checkBox_readChamberRegion->setObjectName(QString::fromUtf8("checkBox_readChamberRegion"));
+        checkBox_readChamberRegion->setEnabled(false);
 
-        verticalLayout_2->addItem(verticalSpacer_4);
+        verticalLayout_2->addWidget(checkBox_readChamberRegion);
+
+        pushButton_generateTETMesh = new QPushButton(tab);
+        pushButton_generateTETMesh->setObjectName(QString::fromUtf8("pushButton_generateTETMesh"));
+        pushButton_generateTETMesh->setEnabled(false);
+
+        verticalLayout_2->addWidget(pushButton_generateTETMesh);
+
+        pushButton_runCollisionChecking = new QPushButton(tab);
+        pushButton_runCollisionChecking->setObjectName(QString::fromUtf8("pushButton_runCollisionChecking"));
+        pushButton_runCollisionChecking->setEnabled(false);
+
+        verticalLayout_2->addWidget(pushButton_runCollisionChecking);
+
+        doubleSpinBox_A1 = new QDoubleSpinBox(tab);
+        doubleSpinBox_A1->setObjectName(QString::fromUtf8("doubleSpinBox_A1"));
+        doubleSpinBox_A1->setEnabled(false);
+        doubleSpinBox_A1->setMinimum(1.000000000000000);
+        doubleSpinBox_A1->setMaximum(100.000000000000000);
+        doubleSpinBox_A1->setValue(1.300000000000000);
+
+        verticalLayout_2->addWidget(doubleSpinBox_A1);
+
+        doubleSpinBox_A2 = new QDoubleSpinBox(tab);
+        doubleSpinBox_A2->setObjectName(QString::fromUtf8("doubleSpinBox_A2"));
+        doubleSpinBox_A2->setEnabled(false);
+        doubleSpinBox_A2->setMinimum(1.000000000000000);
+        doubleSpinBox_A2->setMaximum(3.500000000000000);
+
+        verticalLayout_2->addWidget(doubleSpinBox_A2);
+
+        doubleSpinBox_A3 = new QDoubleSpinBox(tab);
+        doubleSpinBox_A3->setObjectName(QString::fromUtf8("doubleSpinBox_A3"));
+        doubleSpinBox_A3->setEnabled(false);
+        doubleSpinBox_A3->setMinimum(1.000000000000000);
+        doubleSpinBox_A3->setMaximum(3.500000000000000);
+
+        verticalLayout_2->addWidget(doubleSpinBox_A3);
+
+        pushButton_clearAll = new QPushButton(tab);
+        pushButton_clearAll->setObjectName(QString::fromUtf8("pushButton_clearAll"));
+        pushButton_clearAll->setEnabled(false);
+
+        verticalLayout_2->addWidget(pushButton_clearAll);
+
+        pushButton_trajectoryGeneration = new QPushButton(tab);
+        pushButton_trajectoryGeneration->setObjectName(QString::fromUtf8("pushButton_trajectoryGeneration"));
+
+        verticalLayout_2->addWidget(pushButton_trajectoryGeneration);
+
+        pushButton_CollisionResponse = new QPushButton(tab);
+        pushButton_CollisionResponse->setObjectName(QString::fromUtf8("pushButton_CollisionResponse"));
+
+        verticalLayout_2->addWidget(pushButton_CollisionResponse);
 
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
@@ -405,6 +462,17 @@ public:
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        horizontalLayout_9 = new QHBoxLayout();
+        horizontalLayout_9->setSpacing(6);
+        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
+        checkBox_showAABB = new QCheckBox(tab_2);
+        checkBox_showAABB->setObjectName(QString::fromUtf8("checkBox_showAABB"));
+
+        horizontalLayout_9->addWidget(checkBox_showAABB);
+
+
+        verticalLayout_3->addLayout(horizontalLayout_9);
+
         pushButton_inputFourChambers = new QPushButton(tab_2);
         pushButton_inputFourChambers->setObjectName(QString::fromUtf8("pushButton_inputFourChambers"));
 
@@ -417,9 +485,13 @@ public:
 
         pushButton_GenerateChamberTetMesh = new QPushButton(tab_2);
         pushButton_GenerateChamberTetMesh->setObjectName(QString::fromUtf8("pushButton_GenerateChamberTetMesh"));
-        pushButton_GenerateChamberTetMesh->setEnabled(false);
 
         verticalLayout_3->addWidget(pushButton_GenerateChamberTetMesh);
+
+        pushButton_showAABB_Tree = new QPushButton(tab_2);
+        pushButton_showAABB_Tree->setObjectName(QString::fromUtf8("pushButton_showAABB_Tree"));
+
+        verticalLayout_3->addWidget(pushButton_showAABB_Tree);
 
         line = new QFrame(tab_2);
         line->setObjectName(QString::fromUtf8("line"));
@@ -427,11 +499,6 @@ public:
         line->setFrameShadow(QFrame::Sunken);
 
         verticalLayout_3->addWidget(line);
-
-        label_3 = new QLabel(tab_2);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
-
-        verticalLayout_3->addWidget(label_3);
 
         doubleSpinBox_Chamber1 = new QDoubleSpinBox(tab_2);
         doubleSpinBox_Chamber1->setObjectName(QString::fromUtf8("doubleSpinBox_Chamber1"));
@@ -441,16 +508,34 @@ public:
 
         verticalLayout_3->addWidget(doubleSpinBox_Chamber1);
 
+        doubleSpinBox_Chamber2 = new QDoubleSpinBox(tab_2);
+        doubleSpinBox_Chamber2->setObjectName(QString::fromUtf8("doubleSpinBox_Chamber2"));
+        doubleSpinBox_Chamber2->setMinimum(1.000000000000000);
+        doubleSpinBox_Chamber2->setMaximum(100.000000000000000);
+        doubleSpinBox_Chamber2->setValue(1.300000000000000);
+
+        verticalLayout_3->addWidget(doubleSpinBox_Chamber2);
+
+        doubleSpinBox_Chamber3 = new QDoubleSpinBox(tab_2);
+        doubleSpinBox_Chamber3->setObjectName(QString::fromUtf8("doubleSpinBox_Chamber3"));
+        doubleSpinBox_Chamber3->setMinimum(1.000000000000000);
+        doubleSpinBox_Chamber3->setMaximum(100.000000000000000);
+        doubleSpinBox_Chamber3->setValue(1.300000000000000);
+
+        verticalLayout_3->addWidget(doubleSpinBox_Chamber3);
+
+        doubleSpinBox_Chamber4 = new QDoubleSpinBox(tab_2);
+        doubleSpinBox_Chamber4->setObjectName(QString::fromUtf8("doubleSpinBox_Chamber4"));
+        doubleSpinBox_Chamber4->setMinimum(1.000000000000000);
+        doubleSpinBox_Chamber4->setMaximum(100.000000000000000);
+        doubleSpinBox_Chamber4->setValue(1.300000000000000);
+
+        verticalLayout_3->addWidget(doubleSpinBox_Chamber4);
+
         pushButton_ChamberDeformation = new QPushButton(tab_2);
         pushButton_ChamberDeformation->setObjectName(QString::fromUtf8("pushButton_ChamberDeformation"));
 
         verticalLayout_3->addWidget(pushButton_ChamberDeformation);
-
-        pushButton_CollisionChecking = new QPushButton(tab_2);
-        pushButton_CollisionChecking->setObjectName(QString::fromUtf8("pushButton_CollisionChecking"));
-        pushButton_CollisionChecking->setEnabled(false);
-
-        verticalLayout_3->addWidget(pushButton_CollisionChecking);
 
         line_2 = new QFrame(tab_2);
         line_2->setObjectName(QString::fromUtf8("line_2"));
@@ -459,17 +544,44 @@ public:
 
         verticalLayout_3->addWidget(line_2);
 
-        pushButton_CollisionResponse = new QPushButton(tab_2);
-        pushButton_CollisionResponse->setObjectName(QString::fromUtf8("pushButton_CollisionResponse"));
-        pushButton_CollisionResponse->setEnabled(false);
+        label_2 = new QLabel(tab_2);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
 
-        verticalLayout_3->addWidget(pushButton_CollisionResponse);
+        verticalLayout_3->addWidget(label_2);
 
-        pushButton_trajectoryGeneration = new QPushButton(tab_2);
-        pushButton_trajectoryGeneration->setObjectName(QString::fromUtf8("pushButton_trajectoryGeneration"));
-        pushButton_trajectoryGeneration->setEnabled(false);
+        doubleSpinBox_ballMoveX = new QDoubleSpinBox(tab_2);
+        doubleSpinBox_ballMoveX->setObjectName(QString::fromUtf8("doubleSpinBox_ballMoveX"));
+        doubleSpinBox_ballMoveX->setMinimum(-100.000000000000000);
+        doubleSpinBox_ballMoveX->setMaximum(100.000000000000000);
+        doubleSpinBox_ballMoveX->setValue(80.000000000000000);
 
-        verticalLayout_3->addWidget(pushButton_trajectoryGeneration);
+        verticalLayout_3->addWidget(doubleSpinBox_ballMoveX);
+
+        doubleSpinBox_ballMoveY = new QDoubleSpinBox(tab_2);
+        doubleSpinBox_ballMoveY->setObjectName(QString::fromUtf8("doubleSpinBox_ballMoveY"));
+        doubleSpinBox_ballMoveY->setMinimum(-100.000000000000000);
+        doubleSpinBox_ballMoveY->setMaximum(100.000000000000000);
+        doubleSpinBox_ballMoveY->setValue(-60.000000000000000);
+
+        verticalLayout_3->addWidget(doubleSpinBox_ballMoveY);
+
+        doubleSpinBox_ballMoveZ = new QDoubleSpinBox(tab_2);
+        doubleSpinBox_ballMoveZ->setObjectName(QString::fromUtf8("doubleSpinBox_ballMoveZ"));
+        doubleSpinBox_ballMoveZ->setMinimum(-100.000000000000000);
+        doubleSpinBox_ballMoveZ->setMaximum(100.000000000000000);
+        doubleSpinBox_ballMoveZ->setValue(0.000000000000000);
+
+        verticalLayout_3->addWidget(doubleSpinBox_ballMoveZ);
+
+        pushButton_MoveBall = new QPushButton(tab_2);
+        pushButton_MoveBall->setObjectName(QString::fromUtf8("pushButton_MoveBall"));
+
+        verticalLayout_3->addWidget(pushButton_MoveBall);
+
+        pushButton_CollisionChecking = new QPushButton(tab_2);
+        pushButton_CollisionChecking->setObjectName(QString::fromUtf8("pushButton_CollisionChecking"));
+
+        verticalLayout_3->addWidget(pushButton_CollisionChecking);
 
         verticalSpacer = new QSpacerItem(20, 142, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -482,83 +594,142 @@ public:
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        label_2 = new QLabel(tab_3);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_3 = new QLabel(tab_3);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
 
-        verticalLayout->addWidget(label_2);
+        verticalLayout->addWidget(label_3);
 
-        doubleSpinBox_rotationAngleX = new QDoubleSpinBox(tab_3);
-        doubleSpinBox_rotationAngleX->setObjectName(QString::fromUtf8("doubleSpinBox_rotationAngleX"));
-        doubleSpinBox_rotationAngleX->setMinimum(-100.000000000000000);
-        doubleSpinBox_rotationAngleX->setMaximum(100.000000000000000);
-        doubleSpinBox_rotationAngleX->setValue(0.000000000000000);
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
+        checkBox_onlyLeafNode = new QCheckBox(tab_3);
+        checkBox_onlyLeafNode->setObjectName(QString::fromUtf8("checkBox_onlyLeafNode"));
 
-        verticalLayout->addWidget(doubleSpinBox_rotationAngleX);
+        horizontalLayout_3->addWidget(checkBox_onlyLeafNode);
 
-        doubleSpinBox_rotationAngleY = new QDoubleSpinBox(tab_3);
-        doubleSpinBox_rotationAngleY->setObjectName(QString::fromUtf8("doubleSpinBox_rotationAngleY"));
-        doubleSpinBox_rotationAngleY->setMinimum(-100.000000000000000);
-        doubleSpinBox_rotationAngleY->setMaximum(100.000000000000000);
-        doubleSpinBox_rotationAngleY->setValue(0.000000000000000);
+        horizontalSpacer = new QSpacerItem(78, 17, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        verticalLayout->addWidget(doubleSpinBox_rotationAngleY);
+        horizontalLayout_3->addItem(horizontalSpacer);
 
-        doubleSpinBox_rotationAngleZ = new QDoubleSpinBox(tab_3);
-        doubleSpinBox_rotationAngleZ->setObjectName(QString::fromUtf8("doubleSpinBox_rotationAngleZ"));
-        doubleSpinBox_rotationAngleZ->setMinimum(-100.000000000000000);
-        doubleSpinBox_rotationAngleZ->setMaximum(100.000000000000000);
-        doubleSpinBox_rotationAngleZ->setValue(0.000000000000000);
 
-        verticalLayout->addWidget(doubleSpinBox_rotationAngleZ);
+        verticalLayout->addLayout(horizontalLayout_3);
 
-        pushButton_applyrotation = new QPushButton(tab_3);
-        pushButton_applyrotation->setObjectName(QString::fromUtf8("pushButton_applyrotation"));
-        pushButton_applyrotation->setMaximumSize(QSize(16777215, 50));
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        checkBox_overlappingNode = new QCheckBox(tab_3);
+        checkBox_overlappingNode->setObjectName(QString::fromUtf8("checkBox_overlappingNode"));
 
-        verticalLayout->addWidget(pushButton_applyrotation);
+        horizontalLayout_4->addWidget(checkBox_overlappingNode);
 
-        doubleSpinBox_ballMoveX = new QDoubleSpinBox(tab_3);
-        doubleSpinBox_ballMoveX->setObjectName(QString::fromUtf8("doubleSpinBox_ballMoveX"));
-        doubleSpinBox_ballMoveX->setMinimum(-100.000000000000000);
-        doubleSpinBox_ballMoveX->setMaximum(100.000000000000000);
-        doubleSpinBox_ballMoveX->setValue(80.000000000000000);
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        verticalLayout->addWidget(doubleSpinBox_ballMoveX);
+        horizontalLayout_4->addItem(horizontalSpacer_2);
 
-        doubleSpinBox_ballMoveY = new QDoubleSpinBox(tab_3);
-        doubleSpinBox_ballMoveY->setObjectName(QString::fromUtf8("doubleSpinBox_ballMoveY"));
-        doubleSpinBox_ballMoveY->setMinimum(-100.000000000000000);
-        doubleSpinBox_ballMoveY->setMaximum(100.000000000000000);
-        doubleSpinBox_ballMoveY->setValue(-40.000000000000000);
 
-        verticalLayout->addWidget(doubleSpinBox_ballMoveY);
+        verticalLayout->addLayout(horizontalLayout_4);
 
-        doubleSpinBox_ballMoveZ = new QDoubleSpinBox(tab_3);
-        doubleSpinBox_ballMoveZ->setObjectName(QString::fromUtf8("doubleSpinBox_ballMoveZ"));
-        doubleSpinBox_ballMoveZ->setMinimum(-100.000000000000000);
-        doubleSpinBox_ballMoveZ->setMaximum(100.000000000000000);
-        doubleSpinBox_ballMoveZ->setValue(0.000000000000000);
+        horizontalLayout_5 = new QHBoxLayout();
+        horizontalLayout_5->setSpacing(6);
+        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
+        horizontalSlider_AABBTree = new QSlider(tab_3);
+        horizontalSlider_AABBTree->setObjectName(QString::fromUtf8("horizontalSlider_AABBTree"));
+        horizontalSlider_AABBTree->setOrientation(Qt::Horizontal);
 
-        verticalLayout->addWidget(doubleSpinBox_ballMoveZ);
+        horizontalLayout_5->addWidget(horizontalSlider_AABBTree);
 
-        pushButton_MoveBall = new QPushButton(tab_3);
-        pushButton_MoveBall->setObjectName(QString::fromUtf8("pushButton_MoveBall"));
+        lcdNumber_AABBTree = new QLCDNumber(tab_3);
+        lcdNumber_AABBTree->setObjectName(QString::fromUtf8("lcdNumber_AABBTree"));
 
-        verticalLayout->addWidget(pushButton_MoveBall);
+        horizontalLayout_5->addWidget(lcdNumber_AABBTree);
 
-        verticalSpacer_3 = new QSpacerItem(20, 319, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout->addLayout(horizontalLayout_5);
+
+        line_3 = new QFrame(tab_3);
+        line_3->setObjectName(QString::fromUtf8("line_3"));
+        line_3->setFrameShape(QFrame::HLine);
+        line_3->setFrameShadow(QFrame::Sunken);
+
+        verticalLayout->addWidget(line_3);
+
+        label_4 = new QLabel(tab_3);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+
+        verticalLayout->addWidget(label_4);
+
+        horizontalLayout_6 = new QHBoxLayout();
+        horizontalLayout_6->setSpacing(6);
+        horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
+        lineEdit_bodyOutputName = new QLineEdit(tab_3);
+        lineEdit_bodyOutputName->setObjectName(QString::fromUtf8("lineEdit_bodyOutputName"));
+
+        horizontalLayout_6->addWidget(lineEdit_bodyOutputName);
+
+        pushButton_outputBody = new QPushButton(tab_3);
+        pushButton_outputBody->setObjectName(QString::fromUtf8("pushButton_outputBody"));
+
+        horizontalLayout_6->addWidget(pushButton_outputBody);
+
+
+        verticalLayout->addLayout(horizontalLayout_6);
+
+        horizontalLayout_7 = new QHBoxLayout();
+        horizontalLayout_7->setSpacing(6);
+        horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
+        lineEdit_chamberOutputName = new QLineEdit(tab_3);
+        lineEdit_chamberOutputName->setObjectName(QString::fromUtf8("lineEdit_chamberOutputName"));
+
+        horizontalLayout_7->addWidget(lineEdit_chamberOutputName);
+
+        pushButton_outputChamber = new QPushButton(tab_3);
+        pushButton_outputChamber->setObjectName(QString::fromUtf8("pushButton_outputChamber"));
+
+        horizontalLayout_7->addWidget(pushButton_outputChamber);
+
+
+        verticalLayout->addLayout(horizontalLayout_7);
+
+        horizontalLayout_8 = new QHBoxLayout();
+        horizontalLayout_8->setSpacing(6);
+        horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
+        lineEdit_tetOutputName = new QLineEdit(tab_3);
+        lineEdit_tetOutputName->setObjectName(QString::fromUtf8("lineEdit_tetOutputName"));
+
+        horizontalLayout_8->addWidget(lineEdit_tetOutputName);
+
+        pushButton_outputTet = new QPushButton(tab_3);
+        pushButton_outputTet->setObjectName(QString::fromUtf8("pushButton_outputTet"));
+
+        horizontalLayout_8->addWidget(pushButton_outputTet);
+
+
+        verticalLayout->addLayout(horizontalLayout_8);
+
+        verticalSpacer_3 = new QSpacerItem(20, 232, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout->addItem(verticalSpacer_3);
 
         tabWidget->addTab(tab_3, QString());
+        tab_4 = new QWidget();
+        tab_4->setObjectName(QString::fromUtf8("tab_4"));
+        verticalLayout_4 = new QVBoxLayout(tab_4);
+        verticalLayout_4->setSpacing(6);
+        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        verticalSpacer_4 = new QSpacerItem(20, 454, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        gridLayout->addWidget(tabWidget, 5, 0, 1, 1);
+        verticalLayout_4->addItem(verticalSpacer_4);
+
+        tabWidget->addTab(tab_4, QString());
+
+        gridLayout->addWidget(tabWidget, 1, 0, 1, 1);
 
         dockWidget->setWidget(dockWidgetContents);
         MainWindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1389, 21));
+        menuBar->setGeometry(QRect(0, 0, 1360, 21));
         menuBar->setLayoutDirection(Qt::LeftToRight);
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
@@ -663,28 +834,36 @@ public:
         selectionToolBar->setWindowTitle(QApplication::translate("MainWindow", "selectionToolBar", nullptr));
         checkBox_combinedInput->setText(QApplication::translate("MainWindow", "Combined Input", nullptr));
         label->setText(QApplication::translate("MainWindow", "IterTime", nullptr));
-        checkBox_readChamberRegion->setText(QApplication::translate("MainWindow", "Read Chamber Region", nullptr));
-        pushButton_generateTETMesh->setText(QApplication::translate("MainWindow", "Deformation && Collision Response", nullptr));
-        pushButton_runCollisionChecking->setText(QApplication::translate("MainWindow", "Collision Response Testing", nullptr));
-        pushButton_clearAll->setText(QApplication::translate("MainWindow", "Clear All", nullptr));
         comboBox_planeDir->setItemText(0, QApplication::translate("MainWindow", "X", nullptr));
         comboBox_planeDir->setItemText(1, QApplication::translate("MainWindow", "Y", nullptr));
         comboBox_planeDir->setItemText(2, QApplication::translate("MainWindow", "Z", nullptr));
 
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Soft Finger With Ball", nullptr));
-        pushButton_inputFourChambers->setText(QApplication::translate("MainWindow", "Input Twisting Robot", nullptr));
+        checkBox_readChamberRegion->setText(QApplication::translate("MainWindow", "Read Chamber Region", nullptr));
+        pushButton_generateTETMesh->setText(QApplication::translate("MainWindow", "TET Mesh Generation", nullptr));
+        pushButton_runCollisionChecking->setText(QApplication::translate("MainWindow", "Collision Response Testing", nullptr));
+        pushButton_clearAll->setText(QApplication::translate("MainWindow", "Clear All", nullptr));
+        pushButton_trajectoryGeneration->setText(QApplication::translate("MainWindow", "trajectory Generation", nullptr));
+        pushButton_CollisionResponse->setText(QApplication::translate("MainWindow", "...", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Pneumatic Actuation", nullptr));
+        checkBox_showAABB->setText(QApplication::translate("MainWindow", "Enable AABB Tree", nullptr));
+        pushButton_inputFourChambers->setText(QApplication::translate("MainWindow", "Input Finger", nullptr));
         pushButton_inputMem->setText(QApplication::translate("MainWindow", "Input Obstacle", nullptr));
         pushButton_GenerateChamberTetMesh->setText(QApplication::translate("MainWindow", "Generate Tet Mesh", nullptr));
-        label_3->setText(QApplication::translate("MainWindow", "Expansion Ratio", nullptr));
-        pushButton_ChamberDeformation->setText(QApplication::translate("MainWindow", "Conduct Deformation", nullptr));
+        pushButton_showAABB_Tree->setText(QApplication::translate("MainWindow", "Update AABB Tree", nullptr));
+        pushButton_ChamberDeformation->setText(QApplication::translate("MainWindow", "Chamber Deformation", nullptr));
+        label_2->setText(QApplication::translate("MainWindow", " Move Obstacle", nullptr));
+        pushButton_MoveBall->setText(QApplication::translate("MainWindow", " Move Obstacle", nullptr));
         pushButton_CollisionChecking->setText(QApplication::translate("MainWindow", "Collision Checking Response", nullptr));
-        pushButton_CollisionResponse->setText(QApplication::translate("MainWindow", "...", nullptr));
-        pushButton_trajectoryGeneration->setText(QApplication::translate("MainWindow", "...", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Twisting Robot", nullptr));
-        label_2->setText(QApplication::translate("MainWindow", "Move Obstacle", nullptr));
-        pushButton_applyrotation->setText(QApplication::translate("MainWindow", "Apply Rotation", nullptr));
-        pushButton_MoveBall->setText(QApplication::translate("MainWindow", "Apply Translation", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Obstacle Movement", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Soft Finger Demo", nullptr));
+        label_3->setText(QApplication::translate("MainWindow", "AABB Tree Visualizer", nullptr));
+        checkBox_onlyLeafNode->setText(QApplication::translate("MainWindow", "Mode: Only Leaf Node", nullptr));
+        checkBox_overlappingNode->setText(QApplication::translate("MainWindow", "Mode: Overlapping Depth", nullptr));
+        label_4->setText(QApplication::translate("MainWindow", "Output Deformed Mesh", nullptr));
+        pushButton_outputBody->setText(QApplication::translate("MainWindow", "Output Body", nullptr));
+        pushButton_outputChamber->setText(QApplication::translate("MainWindow", "Output Chamber", nullptr));
+        pushButton_outputTet->setText(QApplication::translate("MainWindow", "Output Tet", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Visualization Setting", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "Output Setting", nullptr));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", nullptr));
         menuView->setTitle(QApplication::translate("MainWindow", "View", nullptr));
         menuSelect->setTitle(QApplication::translate("MainWindow", "Select", nullptr));

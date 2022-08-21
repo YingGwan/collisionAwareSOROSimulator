@@ -1264,17 +1264,11 @@ Eigen::Vector3d& soroPneumaticKinematics::_shifttoOriginalPosAA()
 		}
 	}
 	centerPos /= model->GetNodeNumber();
-	/*if (centerPos[0] < 0) {
+	if (centerPos[0] < 0) {
 		for (int i = 0; i < model->GetNodeNumber(); i++) {
 			nodePos(i, 0) = -1.0 * nodePos(i, 0);
 		}
-	}*/
-	//std::cout << centerPos[1] << std::endl;
-	//if (centerPos[1] > 90.0) {
-		/*for (int i = 0; i < model->GetNodeNumber(); i++) {
-			nodePos(i, 1) = -1.0 * (nodePos(i, 1) - 90) + 90;
-		}*/
-	//}
+	}
 
 	_updateMeshPos();
 

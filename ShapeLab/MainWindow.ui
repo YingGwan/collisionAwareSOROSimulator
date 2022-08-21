@@ -2,11 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1389</width>
+    <width>1360</width>
     <height>1014</height>
    </rect>
   </property>
@@ -95,6 +98,9 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="selectionToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="windowTitle">
     <string>selectionToolBar</string>
    </property>
@@ -122,6 +128,9 @@
    <addaction name="actionSelectFace"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="sizePolicy">
     <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
      <horstretch>0</horstretch>
@@ -136,7 +145,20 @@
      <enum>Qt::LeftToRight</enum>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="8" column="0">
+     <item row="2" column="0">
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="3" column="0">
       <widget class="QTreeView" name="treeView">
        <property name="enabled">
         <bool>true</bool>
@@ -164,21 +186,11 @@
        </attribute>
       </widget>
      </item>
-     <item row="7" column="0">
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="5" column="0">
+     <item row="1" column="0">
       <widget class="QTabWidget" name="tabWidget">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="maximumSize">
         <size>
          <width>16777215</width>
@@ -196,7 +208,7 @@
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
-         <string>Soft Finger With Ball</string>
+         <string>Pneumatic Actuation</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
@@ -213,6 +225,9 @@
            </item>
            <item>
             <widget class="QLabel" name="label">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>IterTime</string>
              </property>
@@ -220,62 +235,15 @@
            </item>
            <item>
             <widget class="QSpinBox" name="spinBox_iterTime">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="value">
               <number>1</number>
              </property>
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_readChamberRegion">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Read Chamber Region</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_A1">
-           <property name="minimum">
-            <double>1.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>100.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.300000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_generateTETMesh">
-           <property name="text">
-            <string>Deformation &amp;&amp; Collision Response</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_runCollisionChecking">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Collision Response Testing</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_clearAll">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Clear All</string>
-           </property>
-          </widget>
          </item>
          <item>
           <widget class="QComboBox" name="comboBox_planeDir">
@@ -301,38 +269,129 @@
          </item>
          <item>
           <widget class="QSlider" name="horizontalSlider_slice_Multi_dir">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+          <widget class="QCheckBox" name="checkBox_readChamberRegion">
+           <property name="enabled">
+            <bool>false</bool>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>237</height>
-            </size>
+           <property name="text">
+            <string>Read Chamber Region</string>
            </property>
-          </spacer>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_generateTETMesh">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>TET Mesh Generation</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_runCollisionChecking">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Collision Response Testing</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_A1">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.300000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_A2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.500000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_A3">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.500000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_clearAll">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Clear All</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_trajectoryGeneration">
+           <property name="text">
+            <string>trajectory Generation</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_CollisionResponse">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">
-         <string>Twisting Robot</string>
+         <string>Soft Finger Demo</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <widget class="QCheckBox" name="checkBox_showAABB">
+             <property name="text">
+              <string>Enable AABB Tree</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButton_inputFourChambers">
            <property name="text">
-            <string>Input Twisting Robot</string>
+            <string>Input Finger</string>
            </property>
           </widget>
          </item>
@@ -345,11 +404,15 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_GenerateChamberTetMesh">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
            <property name="text">
             <string>Generate Tet Mesh</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_showAABB_Tree">
+           <property name="text">
+            <string>Update AABB Tree</string>
            </property>
           </widget>
          </item>
@@ -357,13 +420,6 @@
           <widget class="Line" name="line">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Expansion Ratio</string>
            </property>
           </widget>
          </item>
@@ -381,19 +437,48 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_ChamberDeformation">
-           <property name="text">
-            <string>Conduct Deformation</string>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_Chamber2">
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.300000000000000</double>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_CollisionChecking">
-           <property name="enabled">
-            <bool>false</bool>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_Chamber3">
+           <property name="minimum">
+            <double>1.000000000000000</double>
            </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.300000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_Chamber4">
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.300000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_ChamberDeformation">
            <property name="text">
-            <string>Collision Checking &amp;&amp; Response</string>
+            <string>Chamber Deformation</string>
            </property>
           </widget>
          </item>
@@ -405,101 +490,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_CollisionResponse">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_trajectoryGeneration">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>142</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tab_3">
-        <attribute name="title">
-         <string>Obstacle Movement</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Move Obstacle</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_rotationAngleX">
-           <property name="minimum">
-            <double>-100.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>100.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_rotationAngleY">
-           <property name="minimum">
-            <double>-100.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>100.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_rotationAngleZ">
-           <property name="minimum">
-            <double>-100.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>100.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_applyrotation">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Apply Rotation</string>
+            <string> Move Obstacle</string>
            </property>
           </widget>
          </item>
@@ -525,7 +518,7 @@
             <double>100.000000000000000</double>
            </property>
            <property name="value">
-            <double>-40.000000000000000</double>
+            <double>-60.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -545,9 +538,161 @@
          <item>
           <widget class="QPushButton" name="pushButton_MoveBall">
            <property name="text">
-            <string>Apply Translation</string>
+            <string> Move Obstacle</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_CollisionChecking">
+           <property name="text">
+            <string>Collision Checking Response</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>142</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_3">
+        <attribute name="title">
+         <string>Visualization Setting</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>AABB Tree Visualizer</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QCheckBox" name="checkBox_onlyLeafNode">
+             <property name="text">
+              <string>Mode: Only Leaf Node</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>78</width>
+               <height>17</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QCheckBox" name="checkBox_overlappingNode">
+             <property name="text">
+              <string>Mode: Overlapping Depth</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QSlider" name="horizontalSlider_AABBTree">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLCDNumber" name="lcdNumber_AABBTree"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Output Deformed Mesh</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QLineEdit" name="lineEdit_bodyOutputName"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_outputBody">
+             <property name="text">
+              <string>Output Body</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QLineEdit" name="lineEdit_chamberOutputName"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_outputChamber">
+             <property name="text">
+              <string>Output Chamber</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QLineEdit" name="lineEdit_tetOutputName"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_outputTet">
+             <property name="text">
+              <string>Output Tet</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <spacer name="verticalSpacer_3">
@@ -557,7 +702,27 @@
            <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
-             <height>319</height>
+             <height>232</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_4">
+        <attribute name="title">
+         <string>Output Setting</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>454</height>
             </size>
            </property>
           </spacer>
@@ -574,7 +739,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1389</width>
+     <width>1360</width>
      <height>21</height>
     </rect>
    </property>

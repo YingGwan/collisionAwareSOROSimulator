@@ -210,6 +210,39 @@ GLKPOSITION GLKObList::FindIndex(int index)
     return nullptr;
 }
 
+//pos should be starting point
+// 0 1 2 3 [4 5 6 7]
+//posIdx should be the node 3's pos index. (from zero)
+//pos	 should be the node 3's pos			
+GLKPOSITION GLKObList::FindIndexFrom(int index, GLKPOSITION pos, int posIdx)
+{
+	if (posIdx == 0)
+	{
+		//if it starts from the beginning, then use FindIndex() 
+		GLKPOSITION Pos;	int n = 0;
+
+		for (Pos = GetHeadPosition(); Pos != nullptr; n++) {
+			if (n == index) return Pos;
+			GetNext(Pos);
+		}
+
+		return nullptr;
+	}
+	else {
+		//start from the mid point
+		GLKPOSITION Pos;	int n = posIdx;
+
+		for (Pos = pos; Pos != nullptr; n++) {
+			if (n == index) return Pos;
+			GetNext(Pos);
+		}
+
+		return nullptr;
+	}
+
+
+}
+
 GLKPOSITION GLKObList::Find(GLKObject* element)
 {
 	GLKPOSITION Pos;	int n=0;

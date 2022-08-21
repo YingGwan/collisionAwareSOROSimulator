@@ -48,10 +48,6 @@ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../GLKLib/release/ -lG
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../GLKLib/debug/ -lGLKLib
 else:unix: LIBS += -L$$OUT_PWD/../GLKLib/ -lGLKLib
 
-LIBS += -lopengl32
-LIBS += -lglu32
-
-
 INCLUDEPATH += $$PWD/../GLKLib
 DEPENDPATH += $$PWD/../GLKLib
 
@@ -60,4 +56,31 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../GLKL
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../GLKLib/release/GLKLib.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../GLKLib/debug/GLKLib.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../GLKLib/libGLKLib.a
+
+
+DEPENDPATH += $$PWD/../ThirdPartyDependence/glut
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ThirdPartyDependence/glut/ -lGlU32
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ThirdPartyDependence/glut/ -lGlU32
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ThirdPartyDependence/glut/ -lglew32
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ThirdPartyDependence/glut/ -lglew32
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ThirdPartyDependence/glut/ -lOpenGL32
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ThirdPartyDependence/glut/ -lOpenGL32
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ThirdPartyDependence/glut/ -lglut32
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ThirdPartyDependence/glut/ -lglut32
+
+
+
+#win32-g++:CONFIG(release, debug|release):myDocumentation.path = $$OUT_PWD/../ShapeLab/release
+#win32-g++:CONFIG(debug, debug|release):myDocumentation.path = $$OUT_PWD/../ShapeLab/debug
+#myDocumentation.files = $$files($$OUT_PWD/../ThirdPartyDependence/QT_DLL/*.dll)
+
+#CONFIG += file_copies
+#COPIES += myDocumentation
+
+
+
 

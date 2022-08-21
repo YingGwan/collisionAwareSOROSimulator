@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{42165A53-561A-3536-B305-4FF35E3472B2}</ProjectGuid>
+    <ProjectGuid>{2E2EEFAA-8D2D-33AF-8B89-4271FEE72FC0}</ProjectGuid>
     <RootNamespace>QMeshLib</RootNamespace>
     <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>

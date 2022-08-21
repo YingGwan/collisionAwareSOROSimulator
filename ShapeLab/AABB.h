@@ -107,6 +107,10 @@ public:
 	void SumUpCollisionResultWithEnv(QMeshPatch* tetMesh, Eigen::VectorXd& collidedResult);
 	/////////////////////////////////////////////////////////////////
 
+
+	//poly is a visualization polygenMesh
+	void operator_updateAABBTree(PolygenMesh* poly);
+
 private:
 
 	bool init_softFingerSelfCollision = false;
@@ -203,7 +207,10 @@ public:
 	//how to visualize the collision result: 
 	//1. draw give edge a flag: meaning this should be collided box
 
-	QMeshPatch* _debugPatch;
+	QMeshPatch* _debugPatch_tetDraw;	//for the collided tet
+	QMeshPatch* _debugPatch;			//for the collided bounding box wrapping collided tet
+	
+
 	QMeshPatch* _corresPatch_selfCollision;	//self collision
 	double coeff_extension_spring = ATTACHMENT_SELF_COLLISION;			//spring attach location: 0.06		
 	double coeff_extension_epsilon = EPSILON_SELF_COLLISION;

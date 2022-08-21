@@ -6,7 +6,6 @@
 #include <fstream>      // std::ifstream
 #include <cstring>
 #include <string>
-#include <QDir>
 
 void meshOperation::seperateMesh(QMeshPatch* inputMesh, QMeshPatch* body, QMeshPatch* chamber) {
 
@@ -236,6 +235,8 @@ void meshOperation::tetMeshGeneration_outerSkinProtection_ChamberRemesh_New(
             }
         }
     }
+
+    qDebug("body tet is %d", bodyEleNum);
 
 }
 
@@ -1144,137 +1145,32 @@ void meshOperation::selectShift_rigidRegion(QMeshPatch* surfaceMesh, std::string
         if (pp[2] < minZ) minZ = pp[2];
     }
     
-    
-    //save terminal checking and shiftselect region
-    std::string folderName = "../model/" + modelName + "_Shiftselect.txt"; 
-    if (!QFile::exists(folderName.c_str()))
-    {
-        qDebug("shift region saved file can not be read..\nSo re-calculate one file...");
+    for (GLKPOSITION Pos = surfaceMesh->GetNodeList().GetHeadPosition(); Pos;) {
+        QMeshNode* node = (QMeshNode*)surfaceMesh->GetNodeList().GetNext(Pos);
+        node->GetCoord3D(pp[0], pp[1], pp[2]);
+        
+        if (modelName == "twisting" && (pp[1] - minY < 0.1)) node->shirftSelect = true; // twisting
+        if (modelName == "twisting" && (maxY - pp[1] < 0.1)) node->isTerminalChecking = true; // twisting
+        
+        if (modelName == "expanding" && (pp[2] - minZ < 0.5)) node->shirftSelect = true; // expanding
+        
+        if ((modelName == "fingerNew" || modelName == "fingerFinal") && (pp[0] - minX < 0.1)) node->shirftSelect = true; //finger       
+        if ((modelName == "fingerNew" || modelName == "fingerFinal") && (maxX - pp[0] < 0.1)) node->isTerminalChecking = true; //finger - terminal
 
-        std::ofstream tetOutput_shift("../model/" + modelName + "_Shiftselect.txt");
-        std::ofstream tetOutput_termi("../model/" + modelName + "_Terminal.txt");
-        int nodeIdx = 0;
-        for (GLKPOSITION Pos = surfaceMesh->GetNodeList().GetHeadPosition(); Pos; nodeIdx++) {
-            QMeshNode* node = (QMeshNode*)surfaceMesh->GetNodeList().GetNext(Pos);
-            node->GetCoord3D(pp[0], pp[1], pp[2]);
-
-            if (modelName == "twisting" && (pp[1] - minY < 0.1))
-            {
-                node->isTerminalChecking = true; // twisting
-                tetOutput_termi << nodeIdx << " " << 1 << "\n";
-            }
-            else 
-            {
-                node->isTerminalChecking = false; // twisting
-                tetOutput_termi << nodeIdx << " " << 0 << "\n";
-            }
-
-            if (modelName == "twisting" && (maxY - pp[1] < 0.1))
-            {
-                node->shirftSelect = true; // twisting
-                tetOutput_shift << nodeIdx << " " << 1 << "\n";
-            }
-            else {
-                node->shirftSelect = false; // twisting
-                tetOutput_shift << nodeIdx << " " << 0<<"\n";
-            }
-
-            //if (maxY - pp[1] < 0.1) node->shirftSelect = true;
-            //if (pp[2] - minZ < 0.5) node->shirftSelect = true; // expanding
+        if (modelName == "finger" && (pp[0] - minX < 0.1)) node->shirftSelect = true; //finger       
+        if (modelName == "finger" && (maxX - pp[0] < 0.1)) node->isTerminalChecking = true; //finger - terminal
+        
+        if (modelName == "mannequim" && (pp[1] - minY < 0.01)) node->shirftSelect = true;
+        if (modelName == "mannequim" && (maxY - pp[1] < 0.01)) {
+            if (pp[2] * pp[2] + pp[0] * pp[0] < 10.0) node->isTerminalChecking = true;
         }
 
+        //if (maxY - pp[1] < 0.1) node->shirftSelect = true;
+        //if (pp[2] - minZ < 0.5) node->shirftSelect = true; // expanding
 
-        tetOutput_shift.close();
-        tetOutput_termi.close();
-    }
-    else
-    {
-        qDebug("shift region saved file can be read..\n");
-        FILE* tetOutput_shift; tetOutput_shift = fopen(("../model/" + modelName + "_Shiftselect.txt").c_str(), "r");
-        char linebuf[256], buf[100];
-        int nodeIdx = 0;
-        for (GLKPOSITION Pos = surfaceMesh->GetNodeList().GetHeadPosition(); Pos; nodeIdx++) {
-            QMeshNode* node = (QMeshNode*)surfaceMesh->GetNodeList().GetNext(Pos);
-            fgets(linebuf, 255, tetOutput_shift);
-            int nodeI, selection;
-            sscanf(linebuf, "%d %d", &nodeI, &selection);
-            if (selection == 0)
-                node->shirftSelect = false;
-            else if (selection == 1)
-                node->shirftSelect = true;
-            //qDebug("node I is %d while selection is %d",nodeI, selection);
-        }
-
-
-        FILE* tetOutput_termin; tetOutput_termin = fopen(("../model/" + modelName + "_Terminal.txt").c_str(), "r");
-        nodeIdx = 0;
-        for (GLKPOSITION Pos = surfaceMesh->GetNodeList().GetHeadPosition(); Pos; nodeIdx++) {
-            QMeshNode* node = (QMeshNode*)surfaceMesh->GetNodeList().GetNext(Pos);
-            fgets(linebuf, 255, tetOutput_termin);
-            int nodeI, selection;
-            sscanf(linebuf, "%d %d", &nodeI, &selection);
-            if (selection == 0)
-                node->isTerminalChecking = false;
-            else if (selection == 1)
-                node->isTerminalChecking = true;
-        }
-
+     
     }
 
-    ////
-    //std::ofstream tetOutput_shift("../model/" + modelName + "_Shiftselect.txt");
-    //std::ofstream tetOutput_termi("../model/" + modelName + "_Terminal.txt");
-    //int nodeIdx = 0;
-    //for (GLKPOSITION Pos = surfaceMesh->GetNodeList().GetHeadPosition(); Pos; nodeIdx++) {
-    //    QMeshNode* node = (QMeshNode*)surfaceMesh->GetNodeList().GetNext(Pos);
-    //    node->GetCoord3D(pp[0], pp[1], pp[2]);
-
-    //    if (modelName == "twisting" && (pp[1] - minY < 0.1))
-    //    {
-    //        node->isTerminalChecking = true; // twisting
-    //        tetOutput_termi << nodeIdx << " " << 1 << "\n";
-
-    //       
-
-    //    }
-    //    //else {
-    //    //    node->isTerminalChecking = false; // twisting
-    //    //    tetOutput_termi << nodeIdx << " " << 0 << "\n";
-    //    //}
-
-    //    if (modelName == "twisting" && (maxY - pp[1] < 0.1))
-    //    {
-    //        node->shirftSelect = true; // twisting
-    //        tetOutput_shift << nodeIdx << " " << 1 << "\n";
-    //    }
-    //    //else {
-    //    //    node->shirftSelect = false; // twisting
-    //    //    tetOutput_shift << nodeIdx << " " << 0<<"\n";
-    //    //}
-
-    //    if (modelName == "expanding" && (pp[2] - minZ < 0.5)) node->shirftSelect = true; // expanding
-
-    //    if ((modelName == "fingerNew" || modelName == "fingerFinal") && (pp[0] - minX < 0.1)) node->shirftSelect = true; //finger       
-    //    if ((modelName == "fingerNew" || modelName == "fingerFinal") && (maxX - pp[0] < 0.1)) node->isTerminalChecking = true; //finger - terminal
-
-    //    if (modelName == "finger" && (pp[0] - minX < 0.1)) node->shirftSelect = true; //finger       
-    //    if (modelName == "finger" && (maxX - pp[0] < 0.1)) node->isTerminalChecking = true; //finger - terminal
-
-    //    if (modelName == "mannequim" && (pp[1] - minY < 0.01)) node->shirftSelect = true;
-    //    if (modelName == "mannequim" && (maxY - pp[1] < 0.01)) {
-    //        if (pp[2] * pp[2] + pp[0] * pp[0] < 10.0) node->isTerminalChecking = true;
-    //    }
-
-    //    //if (maxY - pp[1] < 0.1) node->shirftSelect = true;
-    //    //if (pp[2] - minZ < 0.5) node->shirftSelect = true; // expanding
-    //}
-
-
-    //tetOutput_shift.close();
-    //tetOutput_termi.close();
-
- 
-    
 }
 
 void meshOperation::materialSpaceSelection_rigid(QMeshPatch* tetMesh, std::string modelName) {
@@ -1435,30 +1331,12 @@ void meshOperation::laplacianSmoothSurface(QMeshPatch* chamber, QMeshPatch* tetM
 
 void meshOperation::selectShift_rigidRegion(QMeshPatch* tetMesh, QMeshPatch* surfaceMesh) {
   
-    int eleIndex = 0;
-    for (GLKPOSITION Pos = tetMesh->GetFaceList().GetHeadPosition(); Pos != NULL; eleIndex++)
-    {
-        QMeshFace* face = (QMeshFace*)(tetMesh->GetFaceList().GetNext(Pos));
-        if (face->GetLeftTetra() == NULL || face->GetRightTetra() == NULL)
-        {
-            face->inner = false;
-            face->boundary = true;
-            for (int i = 0; i < 3; i++) { face->GetNodeRecordPtr(i)->isBoundaryNode = true; face->GetNodeRecordPtr(i)->_isBoundaryNode = true; }
-        }
-    }
-
     for (GLKPOSITION Pos = surfaceMesh->GetNodeList().GetHeadPosition(); Pos;) {
         QMeshNode* node = (QMeshNode*)surfaceMesh->GetNodeList().GetNext(Pos);
         if (node->shirftSelect)
         {
             node->connectTETNode->shirftSelect = true;
-
             node->connectTETNode->isFixed = true;
-
-            /*if(node->connectTETNode->_isBoundaryNode==true)
-                node->connectTETNode->isFixed = true;
-            else
-                node->connectTETNode->isFixed = false;*/
         }
         else 
         {
