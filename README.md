@@ -37,28 +37,23 @@
 
   ## Usage
 
-  - We provide
+  - Sequentially press "Input Finger" -> "Input Obstacle" -> "Generate Tet Mesh" before running deformation and collision-related functions.
+
+  - Change the target volume expansion ratio in **red** and click on “Chamber Deformation” to do the deformation process
+
+    ![image-20220821123913594](https://raw.githubusercontent.com/YingGwan/TyporaUploadImg/main/typora202208/21/123915-748739.png)
+
+  - When a collision happened, click on "Collision Checking Response" to do the collision detection and response. Visualization has been added to show the collided tet elements, bounding boxes of these tet, and self-collision correspondence.
+
+    ![image-20220821124259032](https://raw.githubusercontent.com/YingGwan/TyporaUploadImg/main/typora202208/21/124301-937233.png)
 
     
 
+  ### AABB Visualization
   
-
+  - Some AABB Visualization functions are provided to illustrate different levels of AABB Tree
   
-
+    - You can either see a specific depth or the overlapping result
+    - "Only Show Leaf Node" is included in this visualizer
   
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+    ![image-20220821125016560](C:\Users\tiany\AppData\Roaming\Typora\typora-user-images\image-20220821125016560.png)
